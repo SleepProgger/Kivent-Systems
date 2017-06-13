@@ -17,4 +17,4 @@ cdef class AttachmentComponent2D(MemComponent):
     pass
 
 cdef class AttachmentSystem2D(StaticMemGameSystem):
-    pass
+    cdef dict attached_entities
