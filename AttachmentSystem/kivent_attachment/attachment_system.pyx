@@ -1,5 +1,6 @@
 # distutils: language = c++
 # cython: embedsignature=True
+# cython: profile=True
 from kivy.properties import (
     BooleanProperty, StringProperty, NumericProperty, ListProperty, ObjectProperty
     )
@@ -13,12 +14,8 @@ from kivent_core.systems.rotate_systems cimport RotateStruct2D
 from kivy.factory import Factory
 from kivent_core.systems.position_systems cimport PositionComponent2D, PositionSystem2D
 from kivent_core.systems.rotate_systems cimport RotateComponent2D, RotateSystem2D
-
 from libc.math cimport sin, cos
-from cython cimport bint
-from libcpp.unordered_set cimport unordered_set
-from libcpp.stack cimport stack
-from libcpp.queue cimport queue as cpp_queue
+
 
 cdef class SocketComponent(MemComponent):
     '''
@@ -33,7 +30,7 @@ cdef class SocketComponent(MemComponent):
         associated with. Will be <unsigned int>-1 if the component is
         unattached.
 
-        **children** (list): A list of all entity_ids from the attached entities.
+        **children** (list): A list of all entity_ids of the attached entities.
     '''
     property entity_id:
         def __get__(self):
@@ -42,10 +39,28 @@ cdef class SocketComponent(MemComponent):
     property children:
         def __get__(self):
             cdef SocketStruct* data = <SocketStruct*>self.pointer
-            return list(data.children[0])
-
+            return list(x.first[0] for x in data.children[0])
 
 cdef class SocketSystem(StaticMemGameSystem):
+    '''
+    Processing Depends only on itself.
+    
+    A flexible SocketSystem which can be used by different GameSystems
+    which need to attach entities to others in one way or another.
+    Currently it is only used by the AttachmentSystem2D.
+    
+    Attached childrens are automatically removed when the parent
+    is removed.
+    
+    For entities with a socket AND attachment component the socket component
+    need to be initialized BEFORE the attachment.
+    
+    **Attributes: (Cython Access Only):
+        **root_nodes** (unordered_set[SocketStruct*]): All sockets which
+        aren't itself children of other sockets.
+        It is usefull if you want to iterate over the attachment tree
+        from top to bottom (see AttachmentSystem2D for an example).
+    '''
     type_size = NumericProperty(sizeof(SocketStruct))
     component_type = ObjectProperty(SocketComponent)
     updateable = BooleanProperty(False)
@@ -62,12 +77,26 @@ cdef class SocketSystem(StaticMemGameSystem):
         cdef SocketStruct* pointer = <SocketStruct*>memory_zone.get_pointer(
                 component_index)
         pointer.entity_id = entity_id
-        pointer.children = new unordered_set[unsigned int]()
+        pointer.children = new unordered_map[unsigned int*, unsigned int]()
         pointer._parent_socket = NULL
-        #pointer.user_data = -1
-        self.root_nodes.insert(entity_id)
+        cdef IndexedMemoryZone entities = self.gameworld.entities
+        cdef unsigned int* entity = <unsigned int*>entities.get_pointer(entity_id)
+        self.root_nodes.insert(pointer)
     
-    cdef _attach_child(self, SocketStruct* parent_socket, unsigned int child_id):
+    cdef _attach_child(self, SocketStruct* parent_socket, unsigned int child_id,
+                        unsigned int user_data):
+        '''
+        Register a child as attachment of the parent_socket.
+        Should only be used from AttachmentSystems init_component method.        
+        
+        **Parameter:
+            **parent_socket** (SocketStruct*)
+            
+            **child_id** (unsigned int): The entity_id of the child to attach.
+            
+            **user_data** (unsigned int): Can be used to save an attachment
+            specific index.
+        '''
         cdef MemoryZone socket_memory = self.imz_components.memory_zone
         cdef IndexedMemoryZone entities = self.gameworld.entities
         cdef unsigned int system_index = self.system_index
@@ -78,22 +107,31 @@ cdef class SocketSystem(StaticMemGameSystem):
         if c_index != <unsigned int>-1:
             child_socket = <SocketStruct*> socket_memory.get_pointer(c_index)
             child_socket._parent_socket = parent_socket
-            self.root_nodes.erase(child_id)
-        parent_socket.children[0].insert(child_id)
+            self.root_nodes.erase(child_socket)
+        parent_socket.children[0].insert(_AttachmentPair(entity, user_data))
             
     cdef _detach_child(self, SocketStruct* parent_socket, unsigned int child_id):
+        '''
+        Deregister an attachment.
+        Should only be used from AttachmentSystems remove_component method.        
+        
+        **Parameter:
+            **parent_socket** (SocketStruct*)
+            
+            **child_id** (unsigned int): The entity_id of the child to attach.
+        '''
         cdef MemoryZone socket_memory = self.imz_components.memory_zone
         cdef IndexedMemoryZone entities = self.gameworld.entities
         cdef unsigned int system_index = self.system_index
         cdef unsigned int* entity = <unsigned int*>entities.get_pointer(child_id)
         cdef SocketStruct* child_socket
-        cdef unsigned int c_index       
+        cdef unsigned int c_index
         c_index = entity[system_index + 1]
         if c_index != <unsigned int>-1:
             child_socket = <SocketStruct*> socket_memory.get_pointer(c_index)
             child_socket._parent_socket = NULL
-            self.root_nodes.insert(child_id)
-        parent_socket.children[0].erase(child_id)
+            self.root_nodes.insert(child_socket)
+        parent_socket.children[0].erase(entity)
         
     def remove_component(self, unsigned int component_index):
         cdef MemoryZone socket_memory = self.imz_components.memory_zone
@@ -105,11 +143,12 @@ cdef class SocketSystem(StaticMemGameSystem):
         # We need to remove all children recursive, but due to recursion limit
         # we replace the recursion with a stack based approach.
         cdef IndexedMemoryZone entities = gameworld.entities
-        cdef unsigned int socket_index = self.system_index #system_manager.get_system_index(self.system_id)
-        cdef stack[SocketStruct*] child_stack
+        cdef unsigned int socket_index = self.system_index
+        cdef stack[SocketStruct*] child_stack = self._child_stack
         cdef SocketStruct* cur_socket
         cdef unsigned int child_c_index
-        cdef unsigned int* entity 
+        cdef unsigned int* entity
+        cdef _AttachmentPair child_pair
         child_stack.push(pointer)
         while child_stack.size() > 0:
             cur_socket = child_stack.top()
@@ -118,17 +157,18 @@ cdef class SocketSystem(StaticMemGameSystem):
                 if cur_socket != pointer:
                     remove_entity(cur_socket.entity_id)
                 continue
-            for child_id in cur_socket.children[0]:
-                entity = <unsigned int*>entities.get_pointer(child_id)
+            for child_pair in cur_socket.children[0]:
+                entity = child_pair.first
                 child_c_index = entity[socket_index + 1]
                 if child_c_index == <unsigned int>-1:
-                    remove_entity(child_id)
+                    remove_entity(entity[0])
                     continue
-                cur_socket = <SocketStruct*>socket_memory.get_pointer(child_c_index)
+                cur_socket = <SocketStruct*>socket_memory.get_pointer(
+                    child_c_index)
                 child_stack.push(cur_socket)
         pointer.children[0].clear()
         del pointer.children
-        self.root_nodes.erase(pointer.entity_id)
+        self.root_nodes.erase(pointer)
         super(SocketSystem, self).remove_component(component_index)
         
     def clear_component(self, unsigned int component_index):
@@ -137,7 +177,6 @@ cdef class SocketSystem(StaticMemGameSystem):
             component_index)
         pointer.entity_id = -1
         pointer._parent_socket = NULL
-        #pointer.user_data = -1
         
 Factory.register('SocketSystem', cls=SocketSystem)
         
@@ -211,10 +250,27 @@ cdef class AttachmentComponent2D(MemComponent):
 
 cdef class AttachmentSystem2D(StaticMemGameSystem):
     '''
-    Processing Depends On: 
-    :class:`~kivent_core.systems.position_systems.PositionSystem2D`,
-    :class:`~kivent_core.systems.rotate_systems.RotateSystem2D`,
-    :class:`~kivent_core.systems.attachment_system.AttachmentSystem2D`
+    Processing Depends On: AttachmentSystem2D, PositionSystem2D, RotateSystem2D,
+
+    The AttachmentSystem2D allows to attach entities to other entities.
+    Entities can only be attached to entities owning a SocketComponent.
+
+    Local coordinates (offset) and local rotation (r) are available.
+
+    Be sure to set 'socket_system' to the system_id of the SocketSystem 
+    you want to attach to.
+
+    For entities with a socket AND attachment component the socket component
+    need to be initialized BEFORE the attachment.
+
+    **Attributes:**
+
+        **renderer_name** (StringProperty): The system_id of the
+        PartclesRenderer the particles will use.
+
+        **particle_zone** (StringProperty): The zone in memory particles will
+        be created in.
+
     '''
 
     type_size = NumericProperty(sizeof(AttachmentStruct2D))
@@ -277,7 +333,7 @@ cdef class AttachmentSystem2D(StaticMemGameSystem):
             entity[socket_index + 1])
         cdef unsigned int ent_comps_ind = self.entity_components.add_entity(
             entity_id, zone)
-        socket_system._attach_child(pointer._parent_socket, entity_id)
+        socket_system._attach_child(pointer._parent_socket, entity_id, ent_comps_ind)
                  
     def remove_component(self, unsigned int component_index):
         cdef SystemManager system_manager = self.gameworld.system_manager
@@ -300,7 +356,6 @@ cdef class AttachmentSystem2D(StaticMemGameSystem):
         pointer._parent_socket = NULL
 
     def update(self, dt):
-        cdef dict block_dict = self.entity_components.entity_block_index
         cdef unsigned int component_count = self.entity_components.count
         cdef void** component_data = <void**>(
             self.entity_components.memory_block.data)
@@ -308,39 +363,37 @@ cdef class AttachmentSystem2D(StaticMemGameSystem):
         cdef SystemManager system_manager = self.gameworld.system_manager
         cdef SocketSystem socket_system = system_manager[self.socket_system]
         cdef MemoryZone socket_memory = socket_system.imz_components.memory_zone
-        cdef MemoryZone my_memory = self.imz_components.memory_zone
         cdef unsigned int socket_index, attachment_index
-        socket_index = system_manager.get_system_index(self.socket_system)
-        attachment_index = self.system_index
-        cdef IndexedMemoryZone entities = self.gameworld.entities
-        cdef unsigned int* entity
-        cdef unsigned int child_id, entity_id, real_index
+        socket_index = socket_system.system_index + 1
+        attachment_index = self.system_index + 1
+        cdef unsigned int *entity
+        cdef unsigned int real_index
         cdef AttachmentStruct2D *attachment_struct
         cdef PositionStruct2D *position_struct
         cdef RotateStruct2D *rotate_struct
         cdef PositionStruct2D *p_position_struct
         cdef RotateStruct2D *p_rotate_struct
         cdef SocketStruct *socket_struct
-        # We need to do this in the correct order.
-        # Init with all root nodes
-        cdef cpp_queue[unsigned int] work_queue
-        for entity_id in socket_system.root_nodes:
-            work_queue.push(entity_id)
+        cdef _AttachmentPair child_pair
+        # We need to update the values in the correct order.
+        # Init with all root nodes.
+        cdef cpp_queue[_AttachmentPair] work_queue = self._work_queue
+        for socket_struct in socket_system.root_nodes:
+            for child_pair in socket_struct.children[0]:
+                work_queue.push(child_pair)
         while work_queue.size() > 0:
-            entity_id = work_queue.front()
+            child_pair = work_queue.front()
+            entity = child_pair.first
+            real_index = child_pair.second * component_count
             work_queue.pop()
-            entity = <unsigned int*>entities.get_pointer(entity_id)
-            if entity[socket_index + 1] != <unsigned int>-1:
+            if entity[socket_index] != <unsigned int>-1:
                 socket_struct = <SocketStruct*>socket_memory.get_pointer(
-                    entity[socket_index + 1])
-                for child_id in socket_struct.children[0]:
-                    work_queue.push(child_id)
-            if entity[attachment_index + 1] == <unsigned int>-1:
+                    entity[socket_index])
+                for child_pair in socket_struct.children[0]:
+                    work_queue.push(child_pair)
+            # This entity might be from another attachment system. 
+            if entity[attachment_index] == <unsigned int>-1:
                 continue
-            # TODO:
-            if not entity_id in block_dict:
-                continue
-            real_index = block_dict[entity_id] * component_count
             attachment_struct = <AttachmentStruct2D*>component_data[real_index + 0]
             position_struct = <PositionStruct2D*>component_data[real_index + 1]
             rotate_struct = <RotateStruct2D*>component_data[real_index + 2]
