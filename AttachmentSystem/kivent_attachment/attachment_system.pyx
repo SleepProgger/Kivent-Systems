@@ -1,6 +1,5 @@
 # distutils: language = c++
 # cython: embedsignature=True
-# cython: profile=True
 from kivy.properties import (
     BooleanProperty, StringProperty, NumericProperty, ListProperty, ObjectProperty
     )
@@ -23,12 +22,16 @@ cdef class RelationComponent(MemComponent):
     entity holding this component.
     
     Its main use is to automatically remove all attached entities
-    when the entity is removed from the gameworld.
+    when the entity is removed from the gameworld and to iterate
+    relationsship trees.
 
     **Attributes:**
         **entity_id** (unsigned int): The entity_id this component is currently
         associated with. Will be <unsigned int>-1 if the component is
         unattached.
+        
+        **parent** (unsigned int): The id of the parent or <unsigned int>-1
+        if this element doesn't have a parent.        
 
         **children** (list): A list of all entity_ids of the attached entities.
     '''
@@ -36,12 +39,23 @@ cdef class RelationComponent(MemComponent):
         def __get__(self):
             cdef RelationStruct* data = <RelationStruct*>self.pointer
             return data.entity_id
+        
+    property parent:
+        def __get__(self):
+            cdef RelationStruct* data = <RelationStruct*>self.pointer
+            if data.parent == NULL:
+                return <unsigned int>-1
+            return data.parent.entity_id
+        
     property children:
         def __get__(self):
             cdef RelationStruct* data = <RelationStruct*>self.pointer
+            if data.children == NULL:
+                return 0
             return list(x.entity_id for x in data.children[0])
 
-cdef class SocketSystem(StaticMemGameSystem):
+
+cdef class RelationSystem(StaticMemGameSystem):
     '''
     Processing Depends only on itself.
     
@@ -52,7 +66,7 @@ cdef class SocketSystem(StaticMemGameSystem):
     Attached childrens are automatically removed when the parent
     is removed.
     
-    For entities with a socket AND attachment component the socket component
+    For entities with a relationsship AND attachment component the socket component
     need to be initialized BEFORE the attachment.
     
     **Attributes: (Cython Access Only):
@@ -65,11 +79,11 @@ cdef class SocketSystem(StaticMemGameSystem):
     component_type = ObjectProperty(RelationComponent)
     updateable = BooleanProperty(False)
     processor = BooleanProperty(False)
-    system_names = ListProperty(['socket'])
-    system_id = StringProperty('socket')
+    system_names = ListProperty(['relations'])
+    system_id = StringProperty('relations')
     
     def __init__(self, **kwargs):
-        super(SocketSystem, self).__init__(**kwargs)
+        super(RelationSystem, self).__init__(**kwargs)
         
     def init_component(self, unsigned int component_index, 
         unsigned int entity_id, str zone, args):
@@ -77,25 +91,25 @@ cdef class SocketSystem(StaticMemGameSystem):
         cdef RelationStruct* pointer = <RelationStruct*>memory_zone.get_pointer(
                 component_index)
         pointer.entity_id = entity_id
-        pointer.parent_socket = NULL
+        pointer.parent = NULL
         pointer.children = NULL
         self.root_nodes.insert(pointer)
     
-    cdef _attach_child(self, RelationStruct* parent_socket, RelationStruct* child_socket):
+    cdef _attach_child(self, RelationStruct* parent, RelationStruct* child):
         '''
         Register a child as attachment of the parent_socket.
         Should only be used from AttachmentSystems init_component method.        
         
         **Parameter:
-            **parent_socket** (RelationStruct*)
+            **parent** (RelationStruct*)
             
-            **child_socket** (unsigned int)
+            **child** (RelationStruct*)
         '''
-        child_socket.parent_socket = parent_socket
-        if parent_socket.children == NULL:
-            parent_socket.children = new cpp_set[RelationStruct*]()
-        parent_socket.children[0].insert(child_socket)
-        self.root_nodes.erase(child_socket)
+        child.parent = parent
+        if parent.children == NULL:
+            parent.children = new cpp_set[RelationStruct*]()
+        parent.children[0].insert(child)
+        self.root_nodes.erase(child)
             
     cdef _detach_child(self, RelationStruct* child):
         '''
@@ -107,9 +121,9 @@ cdef class SocketSystem(StaticMemGameSystem):
             
             **child_id** (unsigned int): The entity_id of the child to attach.
         '''
-        child.parent_socket.children[0].erase(child)
+        child.parent.children[0].erase(child)
         self.root_nodes.insert(child)
-        child.parent_socket = NULL
+        child.parent = NULL
         
     cdef _detach_child_by_id(self, unsigned int child_id):
         cdef MemoryZone my_memory = self.imz_components.memory_zone
@@ -147,16 +161,16 @@ cdef class SocketSystem(StaticMemGameSystem):
             pointer.children[0].clear()
             del pointer.children
         self.root_nodes.erase(pointer)
-        super(SocketSystem, self).remove_component(component_index)
+        super(RelationSystem, self).remove_component(component_index)
         
     def clear_component(self, unsigned int component_index):
         cdef MemoryZone memory_zone = self.imz_components.memory_zone
         cdef RelationStruct* pointer = <RelationStruct*>memory_zone.get_pointer(
             component_index)
         pointer.entity_id = -1
-        pointer.parent_socket = NULL
+        pointer.parent = NULL
         
-Factory.register('SocketSystem', cls=SocketSystem)
+Factory.register('RelationSystem', cls=RelationSystem)
         
         
 cdef class AttachmentComponent2D(MemComponent):
@@ -228,32 +242,22 @@ cdef class AttachmentComponent2D(MemComponent):
 cdef class AttachmentSystem2D(StaticMemGameSystem):
     '''
     Processing Depends On: AttachmentSystem2D, PositionSystem2D, RotateSystem2D,
+    RelationSystem
 
-    The AttachmentSystem2D allows to attach entities to other entities.
-    Entities can only be attached to entities owning a SocketComponent.
+    The AttachmentSystem2D allows to attach entities to other entities to 
+    construct local coordinate systems.
+    Attached entities and their parents need to own a RelationComponent.
 
     Local coordinates (offset) and local rotation (r) are available.
 
-    Be sure to set 'socket_system' to the system_id of the SocketSystem 
-    you want to attach to.
-
-    For entities with a socket AND attachment component the socket component
-    need to be initialized BEFORE the attachment.
-
-    **Attributes:**
-
-        **renderer_name** (StringProperty): The system_id of the
-        PartclesRenderer the particles will use.
-
-        **particle_zone** (StringProperty): The zone in memory particles will
-        be created in.
-
+    Entities which act as parent AND childof another entity need to initialize
+    the RelationComponent before the AttachmentComponent.
     '''
     type_size = NumericProperty(sizeof(AttachmentStruct2D))
     component_type = ObjectProperty(AttachmentComponent2D)
     updateable = BooleanProperty(True)
     processor = BooleanProperty(True)
-    system_names = ListProperty(['attachment', 'socket', 'position', 'rotate'])
+    system_names = ListProperty(['attachment', 'relations', 'position', 'rotate'])
     system_id = StringProperty('attachment')
     
     def __init__(self, **kwargs):
@@ -287,7 +291,7 @@ cdef class AttachmentSystem2D(StaticMemGameSystem):
         cdef str socket_name = self.system_names[1]
         cdef PositionSystem2D position_system = system_manager[pos_name]
         cdef RotateSystem2D rotate_system = system_manager[rot_name]
-        cdef SocketSystem socket_system = system_manager[socket_name]
+        cdef RelationSystem socket_system = system_manager[socket_name]
         cdef unsigned int pos_index = system_manager.get_system_index(
             pos_name) + 1
         cdef unsigned int rot_index = system_manager.get_system_index(
@@ -319,13 +323,14 @@ cdef class AttachmentSystem2D(StaticMemGameSystem):
             self.entity_components.memory_block.data)
         cdef RelationStruct *my_socket = <RelationStruct*>component_data[
             component_count * ent_comps_ind + 1]
+        # Store our components_id to easily look up the components
+        # in the update method.
         my_socket.user_data = ent_comps_ind
         socket_system._attach_child(parent_struct, my_socket)
-        print "Attached %i to %i" % (entity_id, parent_struct.entity_id)
                  
     def remove_component(self, unsigned int component_index):
         cdef SystemManager system_manager = self.gameworld.system_manager
-        cdef SocketSystem socket_system = system_manager[self.system_names[1]] 
+        cdef RelationSystem socket_system = system_manager[self.system_names[1]] 
         cdef MemoryZone memory_zone = self.imz_components.memory_zone
         cdef AttachmentStruct2D* pointer = <AttachmentStruct2D*>memory_zone.get_pointer(
             component_index)
@@ -348,7 +353,7 @@ cdef class AttachmentSystem2D(StaticMemGameSystem):
         cdef void** component_data = <void**>(
             self.entity_components.memory_block.data)
         cdef SystemManager system_manager = self.gameworld.system_manager
-        cdef SocketSystem socket_system = system_manager[self.system_names[1]]
+        cdef RelationSystem socket_system = system_manager[self.system_names[1]]
         cdef unsigned int user_data, real_index
         cdef RelationStruct *parent
         cdef RelationStruct *child
@@ -362,6 +367,8 @@ cdef class AttachmentSystem2D(StaticMemGameSystem):
         # Init with all root nodes.
         cdef cpp_queue[RelationStruct*] work_queue = self._work_queue
         for parent in socket_system.root_nodes:
+            if parent.children == NULL:
+                continue
             for child in parent.children[0]:
                 work_queue.push(child)
         while not work_queue.empty():

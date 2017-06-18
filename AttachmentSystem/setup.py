@@ -18,11 +18,13 @@ import sys
 platform = sys.platform
 
 cstdarg = '-std=gnu99'
+#cstdarg = '-lstdc++'
 libraries = ['GL']
 extra_compile_args = []
 extra_link_args = []
 global_include_dirs = []
 library_dirs = []
+DEBUG = False
 
 # Copied from kivent.core. Lets just hope it works for all platforms
 if environ.get('NDKPLATFORM') and environ.get('LIBLINK'):
@@ -80,7 +82,7 @@ elif platform == 'darwin':
                        '-framework', 'OpenGL']
     libraries = []
 
-do_clear_existing = False
+do_clear_existing = True
 
 
 
@@ -112,6 +114,7 @@ for name in modules:
         real_modules[prefix + module_name] = [file_prefix + module_name + '.pyx']
         real_modules_c[prefix + module_name] = [file_prefix + module_name + '.c']
         check_for_removal.append(file_prefix + module_name + '.c')
+        check_for_removal.append(file_prefix + module_name + '.cpp')
         
 print real_modules
 print real_modules_c
@@ -124,7 +127,8 @@ def build_ext(ext_name, files, include_dirs=[]):
     return Extension(ext_name, files, global_include_dirs + include_dirs,
                      extra_compile_args=[cstdarg, '-ffast-math', ] + extra_compile_args,
                      libraries=libraries, extra_link_args=extra_link_args,
-                     library_dirs=library_dirs)
+                     library_dirs=library_dirs,
+                     language="c++")
     
 extensions = []
 cmdclass = {}
@@ -136,7 +140,7 @@ def build_extensions_for_modules_cython(ext_list, modules):
         if environ.get('READTHEDOCS', None) == 'True':
             ext.pyrex_directives = {'embedsignature': True}
         ext_a(ext)
-    return cythonize(ext_list)
+    return cythonize(ext_list, compiler_directives={'profile': DEBUG})
 
 def build_extensions_for_modules(ext_list, modules):
     ext_a = ext_list.append
