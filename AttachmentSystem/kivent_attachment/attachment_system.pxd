@@ -16,21 +16,27 @@ ctypedef struct RelationStruct:
     cpp_set[RelationStruct*] *children
     RelationStruct *parent
     unsigned int components_index
-    uintptr_t user_data  
-    
+    uintptr_t user_data
+      
 cdef class RelationComponent(MemComponent):
-    pass
+    cdef void* get_descendants(self, vector[RelationStruct*] *output) except NULL
 
 cdef class RelationTreeSystem(StaticMemGameSystem):
     cdef unordered_set[RelationStruct*] root_nodes
     cdef unsigned int _state
+    
     cdef RelationStruct* _attach_child(self, RelationStruct* parent_socket,
                        RelationStruct *child_socket) except NULL
     cdef RelationStruct* _attach_child_by_id(self, unsigned int parent_id,
                              unsigned int child_id) except NULL
+                             
     cdef unsigned int _detach_child(self, RelationStruct* parent_socket) except 0
     cdef unsigned int _detach_child_by_id(self, unsigned int child_id) except 0
-    cdef unsigned int get_topdown_iterator(self, vector[RelationStruct*] *output) except -1
+    
+    cdef void* get_descendants(self, RelationStruct *parent, 
+                               vector[RelationStruct*] *output) except NULL
+    cdef void* get_topdown_iterator(self, vector[RelationStruct*] *output) except NULL
+
 
 cdef class LocalPositionSystem2D(RelationTreeSystem):
     cdef bint _allocated

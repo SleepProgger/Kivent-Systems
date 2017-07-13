@@ -46,7 +46,7 @@ cdef class RelationComponent(MemComponent):
         def __get__(self):
             cdef RelationStruct* data = <RelationStruct*>self.pointer
             if data.parent == NULL:
-                return <unsigned int>-1
+                return -1
             return data.parent.entity_id
         
     property children:
@@ -60,6 +60,35 @@ cdef class RelationComponent(MemComponent):
         def __get__(self):
             cdef RelationStruct* data = <RelationStruct*>self.pointer
             return data.parent == NULL
+        
+    property descendants:
+        def __get__(self):
+            cdef vector[RelationStruct*] tree
+            self.get_descendants(&tree)
+            cdef RelationStruct *x
+            return [ x.entity_id for x in tree ]
+    
+    cdef void* get_descendants(self,
+            vector[RelationStruct*] *output) except NULL:
+        cdef RelationStruct *parent = <RelationStruct*>self.pointer
+        if parent.children == NULL:
+            return parent
+        cdef RelationStruct *child
+        cdef RelationStruct *current
+        cdef unsigned int pos = 0
+        for child in parent.children[0]:
+            output[0].push_back(child)
+        cdef unsigned int size = output.size()
+        while pos < size:
+            current = output[0][pos] 
+            if current.children and current.children[0].size():
+                for child in current.children[0]:
+                    output[0].push_back(child)
+                    size += 1
+            pos += 1
+        return parent
+
+
 
 cdef class RelationTreeSystem(StaticMemGameSystem):
     '''
@@ -101,8 +130,6 @@ cdef class RelationTreeSystem(StaticMemGameSystem):
         cdef RelationStruct* pointer = <RelationStruct*>memory_zone.get_pointer(
                 component_index)
         pointer.entity_id = entity_id
-        pointer.children = NULL
-        pointer.parent = NULL
         self.root_nodes.insert(pointer)
     
     cdef RelationStruct* _attach_child(self, RelationStruct* parent, RelationStruct* child) except NULL:
@@ -183,31 +210,43 @@ cdef class RelationTreeSystem(StaticMemGameSystem):
             component_index)
         pointer.entity_id = -1
         pointer.parent = NULL
+        pointer.children = NULL
         pointer.components_index = -1
+    
+    cdef void* get_descendants(self, RelationStruct *parent, 
+            vector[RelationStruct*] *output) except NULL:
+        """
+            Append all descendants of a given entity in a top down fashion
+            to the output vector.
+            It is guaranteed that every entity in the list is
+            located after its parent.
+        """
+        if parent.children == NULL:
+            return parent
+        cdef RelationStruct *child
+        cdef RelationStruct *current
+        cdef unsigned int pos = output.size()
+        for child in parent.children[0]:
+            output[0].push_back(child)
+        cdef unsigned int size = output.size()
+        while pos < size:
+            current = output[0][pos] 
+            if current.children and current.children[0].size():
+                for child in current.children[0]:
+                    output[0].push_back(child)
+                    size += 1
+            pos += 1
+        return parent
         
-    cdef unsigned int get_topdown_iterator(self, vector[RelationStruct*] *output) except -1:
+    cdef void* get_topdown_iterator(self, vector[RelationStruct*] *output) except NULL:
         """
         Fills the output vector with all non root nodes in a top down fashion.
         """
         cdef RelationStruct *parent
-        cdef RelationStruct *child
-        cdef unsigned int size, pos
-        size = pos = 0
         output[0].clear()
         for parent in self.root_nodes:
-            if parent.children == NULL:
-                continue
-            for child in parent.children[0]:
-                output[0].push_back(child)
-                size += 1
-        while pos < size:
-            parent = output[0][pos] 
-            if parent.children and parent.children[0].size():
-                for child in parent.children[0]:
-                    output[0].push_back(child)
-                    size += 1
-            pos += 1
-        return size
+            self.get_descendants(parent, output)
+        return output
         
     def attach_child(self, unsigned int parent_id, unsigned int child_id):
         self._attach_child_by_id(parent_id, child_id)
@@ -391,12 +430,11 @@ cdef class LocalPositionSystem2D(RelationTreeSystem):
 
     def update(self, dt):
         # We need to update the values in the correct order.
-        # TODO: switch to static memory
+        # TODO: switch to static memory ?
         cdef vector[RelationStruct*] *work_queue = &self._work_queue
         if self._state != self._last_socket_state:
             self.get_topdown_iterator(work_queue)
             self._last_socket_state = self._state
-        # Do the real calculations
         self._update(dt, work_queue)
     
 Factory.register('LocalPositionSystem2D', cls=LocalPositionSystem2D)
@@ -411,7 +449,7 @@ cdef class LocalPositionRotateSystem2D(LocalPositionSystem2D):
     construct local coordinate systems.
     Local coordinates (offset) and local rotation are available.
     
-    Root nodes also need to own the local position and local rotation
+    Root nodes need to own the local position and local rotation
     components even if they aren't used.
     """
     # own components global position
