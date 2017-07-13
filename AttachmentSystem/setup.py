@@ -112,7 +112,7 @@ for name in modules:
     module_files = modules[name]
     for module_name in module_files:
         real_modules[prefix + module_name] = [file_prefix + module_name + '.pyx']
-        real_modules_c[prefix + module_name] = [file_prefix + module_name + '.c']
+        real_modules_c[prefix + module_name] = [file_prefix + module_name + '.c', file_prefix + module_name + '.cpp']
         check_for_removal.append(file_prefix + module_name + '.c')
         check_for_removal.append(file_prefix + module_name + '.cpp')
         
@@ -128,7 +128,7 @@ def build_ext(ext_name, files, include_dirs=[]):
                      extra_compile_args=[cstdarg, '-ffast-math', ] + extra_compile_args,
                      libraries=libraries, extra_link_args=extra_link_args,
                      library_dirs=library_dirs,
-                     language="c++")
+                     language=None)
     
 extensions = []
 cmdclass = {}
@@ -173,8 +173,4 @@ setup(
     packages=[
         'kivent_attachment',
         ],
-    #package_dir={'scaling_renderer': 'scaling_renderer'},
-    #package_data={'scaling_renderer': [
-    #    '*.pxd',
-    #],}
 )
