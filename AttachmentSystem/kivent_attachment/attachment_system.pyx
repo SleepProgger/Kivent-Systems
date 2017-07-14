@@ -1,5 +1,6 @@
 # distutils: language = c++
 # cython: embedsignature=True
+
 from kivy.properties import (
     BooleanProperty, StringProperty, NumericProperty, ListProperty, ObjectProperty
     )
@@ -30,12 +31,14 @@ cdef class RelationComponent(MemComponent):
         associated with. Will be <unsigned int>-1 if the component is
         unattached.
         
-        **parent** (unsigned int): The id of the parent or <unsigned int>-1
+        **parent** (unsigned int): The id of the parent or -1
         if this element doesn't have a parent.        
 
         **children** (list): A list of all entity_ids of the child entities.
         
         **is_root** (bool): True if this component has a parent.
+        
+        **descendants** (list): A list of all descendants entity_ids.
     '''
     property entity_id:
         def __get__(self):
@@ -102,11 +105,11 @@ cdef class RelationTreeSystem(StaticMemGameSystem):
     and changed to root nodes.
     If you want to remove a parent and its childs use the remove_subtree method.
     
-    **Attributes: (Cython Access Only):
+    **Attributes: (Cython Access Only):**
         **root_nodes** (unordered_set[RelationStruct*]): All sockets which
         aren't itself children of other sockets.
-        It is usefull if you want to iterate over the attachment tree
-        from top to bottom (see AttachmentSystem2D for an example).
+        It is usefull if you want to iterate over the attachment tree from top
+        to bottom (see the **get_topdown_iterator** function for an example).
         
         **_state** (unsigned int): A simple (wrap around) counter which is
         increased after every change to the relationsship tree.
@@ -126,6 +129,13 @@ cdef class RelationTreeSystem(StaticMemGameSystem):
         
     def init_component(self, unsigned int component_index, 
         unsigned int entity_id, str zone, args):
+        """
+        A **RelationComponent** is initialized with an args dict containing
+        a 'parent' key holding the parents entity_id.
+        
+        If there is no 'parent' key or the value is -1 the entity will become
+        a root entity.
+        """
         cdef MemoryZone memory_zone = self.imz_components.memory_zone
         cdef RelationStruct* pointer = <RelationStruct*>memory_zone.get_pointer(
                 component_index)
@@ -189,6 +199,13 @@ cdef class RelationTreeSystem(StaticMemGameSystem):
         return self._detach_child(child_struct)
         
     def remove_component(self, unsigned int component_index):
+        '''
+        Typically this will be called automatically by GameWorld.
+        If you want to remove a component without destroying the entity call this function directly. 
+        
+        **Args:**
+            **component_index** (unsigned int): the component_id to be removed.
+        '''
         cdef MemoryZone socket_memory = self.imz_components.memory_zone
         cdef RelationStruct* pointer = <RelationStruct*>socket_memory.get_pointer(
             component_index)
@@ -215,12 +232,12 @@ cdef class RelationTreeSystem(StaticMemGameSystem):
     
     cdef void* get_descendants(self, RelationStruct *parent, 
             vector[RelationStruct*] *output) except NULL:
-        """
+        '''
             Append all descendants of a given entity in a top down fashion
             to the output vector.
             It is guaranteed that every entity in the list is
             located after its parent.
-        """
+        '''
         if parent.children == NULL:
             return parent
         cdef RelationStruct *child
@@ -239,9 +256,9 @@ cdef class RelationTreeSystem(StaticMemGameSystem):
         return parent
         
     cdef void* get_topdown_iterator(self, vector[RelationStruct*] *output) except NULL:
-        """
+        '''
         Fills the output vector with all non root nodes in a top down fashion.
-        """
+        '''
         cdef RelationStruct *parent
         output[0].clear()
         for parent in self.root_nodes:
@@ -249,12 +266,35 @@ cdef class RelationTreeSystem(StaticMemGameSystem):
         return output
         
     def attach_child(self, unsigned int parent_id, unsigned int child_id):
+        """
+        Register a child as attachment of a parent.        
+        If the child entity is alreay attached to another parent
+        it will be detached before.
+        
+        **Args:**
+            **parent_id** (unsigned int)
+            
+            **child_id** (unsigned int)
+        """
         self._attach_child_by_id(parent_id, child_id)
         
     def detach_child(self, unsigned int child_id):
+        """
+        Deregister an attachment.
+        The child will become a a root entity.
+        
+        **Args:**
+            **child_id** (unsigned int)
+        """
         self._detach_child_by_id(child_id)
         
     def remove_subtree(self, unsigned int entity_id):
+        """
+        Remove the given entity and all its descendants from the gameworld.
+        
+        **Args:**
+            **entity_id** (unsigned int)        
+        """
         gameworld = self.gameworld
         remove_entity = gameworld.remove_entity
         cdef MemoryZone my_memory = self.imz_components.memory_zone
@@ -291,12 +331,28 @@ cdef class LocalPositionSystem2D(RelationTreeSystem):
     '''
     Processing Depends On: LocalPositionSystem2D, PositionSystem2D
 
-    The LocalPositionSystem2D allows to attach entities to other entities to 
+    The **LocalPositionSystem2D** allows to attach entities to other entities to 
     construct local coordinate systems.
     Local coordinates (offset) are available.
+
+    **Attributes:**
+        **system_names** (list): Shall contain the system id of the **PositionSystem2D**
+        which will be used to store the **global** position.
+        
+        **local_systems** (list): Shall contain the system id of the **PositionSystem2D**
+        which will be used for the **local** position.
+            
+        **parent_systems** (list): Shall contain the system id of the **PositionSystem2D**
+        which will be used for the **parents** position.
+        In most cases this will be the same value as used for the global system.
     
-    Root nodes also need to own the local position component
+    .. note:: Root nodes also need to own the local position component \
     even if they aren't used.
+    
+    .. note:: This system can be used to implement other local systems in cython. \
+    Extend it, select the required components in the **system_names**, **local_systems** \
+    and **parent_systems** properties and overwrite the **update** method. \
+    For more information see **LocalPositionRotateSystem2D** source code.
     '''   
     updateable = BooleanProperty(True)
     processor = BooleanProperty(True)    
@@ -355,6 +411,13 @@ cdef class LocalPositionSystem2D(RelationTreeSystem):
     
     def init_component(self, unsigned int component_index, 
         unsigned int entity_id, str zone, dict args):
+        """
+        A **RelationComponent** is initialized with an args dict containing
+        a 'parent' key holding the parents entity_id.
+        
+        If there is no 'parent' key or the value is -1 the entity will become
+        a root entity and its local coordinates are ignored.
+        """
         super(LocalPositionSystem2D, self).init_component(
             component_index, entity_id, zone, args)
         cdef MemoryZone memory_zone = self.imz_components.memory_zone
@@ -371,6 +434,19 @@ cdef class LocalPositionSystem2D(RelationTreeSystem):
                              ent_comps_ind, relation_struct)
                  
     def remove_component(self, unsigned int component_index):
+        """
+        Typically this will be called automatically by GameWorld.
+        If you want to remove a component without destroying the entity
+        call this function directly.
+        
+        If you want to override the behavior of component cleanup override
+        clear_component instead.
+        Only override this function if you are working directly with the
+        storage of components for your system.
+
+        **Args:**
+            **component_index** (unsigned int): the component_id to be removed.
+        """
         cdef MemoryZone memory_zone = self.imz_components.memory_zone
         cdef RelationStruct *pointer = <RelationStruct *>memory_zone.get_pointer(
             component_index)
@@ -444,13 +520,25 @@ cdef class LocalPositionRotateSystem2D(LocalPositionSystem2D):
     """
     Processing Depends On: LocalPositionRotateSystem2D, PositionSystem2D,
     RotateSystem2D
-
-    The LocalPositionSystem2D allows to attach entities to other entities to 
-    construct local coordinate systems.
-    Local coordinates (offset) and local rotation are available.
     
-    Root nodes need to own the local position and local rotation
-    components even if they aren't used.
+    The **LocalPositionRotateSystem2D** allows to attach entities to other entities to 
+    construct local coordinate systems.
+    Local coordinates and local rotation are available.
+
+    **Attributes:**
+        **system_names** (list): Shall contain the system id of the **PositionSystem2D**
+        and **RotateSystem2D** which will be used to store the **global** position
+        and rotation.
+        
+        **local_systems** (list): Shall contain the system id of the **PositionSystem2D**
+        and **RotateSystem2D** which will be used for the **local** position and rotation.
+            
+        **parent_systems** (list): Shall contain the system id of the **PositionSystem2D**
+        and **RotateSystem2D** which will be used for the **parents** position and rotation.
+        In most cases this will be the same values as used for the global system.
+    
+    .. note:: Root nodes also need to own the local position and local rotation component \
+    even if they aren't used.
     """
     # own components global position
     system_names = ListProperty([
