@@ -1,0 +1,613 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>The Cymunk Module &mdash; KivEnt 2.2.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="KivEnt 2.2.0 documentation" href="index.html"/>
+        <link rel="next" title="Particles" href="particles.html"/>
+        <link rel="prev" title="Managers" href="managers.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> KivEnt
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="gameworld.html">GameWorld</a></li>
+<li class="toctree-l1"><a class="reference internal" href="entity.html">Entity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gamesystems.html">Game Systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="managers.html">Managers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">The Cymunk Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#physics">Physics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#interaction">Interaction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="particles.html">Particles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rendering.html">Rendering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_handlers.html">Memory Handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tiled.html">The Maps Module</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">KivEnt</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>The Cymunk Module</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/physics.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="the-cymunk-module">
+<h1>The Cymunk Module<a class="headerlink" href="#the-cymunk-module" title="Permalink to this headline">¶</a></h1>
+<p><strong>These classes have cdefed functions that cannot be read by
+Sphinx. Read the source if you want to find out more about using them.</strong></p>
+<p>This module extends the base functionality of KivEnt by integrating it with
+the Chipmunk2d Physics engine. This will allow you to perform complex
+collision detection and real-time 2d physics calculations on large numbers of
+entities simultaneously.</p>
+<div class="section" id="physics">
+<h2>Physics<a class="headerlink" href="#physics" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_cymunk.physics.PhysicsComponent">
+<em class="property">class </em><code class="descclassname">kivent_cymunk.physics.</code><code class="descname">PhysicsComponent</code><a class="headerlink" href="#kivent_cymunk.physics.PhysicsComponent" title="Permalink to this definition">¶</a></dt>
+<dd><p>The PhysicsComponent mainly exposes the ability to retrieve cymunk
+objects. You will want to review the documentation for the various parts of
+cymunk (and <a class="reference external" href="https://chipmunk-physics.net/">Chipmunk2D’s documentation</a>)
+to properly use this system.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>entity_id</strong> (unsigned int): The entity_id this component is currently
+associated with. Will be &lt;unsigned int&gt;-1 if the component is
+unattached.</p>
+<p><strong>body</strong> (Body): returns the <cite>cymunk.Body</cite> for your physics component.
+Only set this if you are handling the adding and removal of your
+physics body from the cymunk.Space yourself.</p>
+<p><strong>unit_vector</strong> (tuple): Returns the current unit_vector describing
+the heading of your physics body. Does not support setting only
+getting.</p>
+<p><strong>shapes</strong> (list): Returns a list of the shapes attached to the body.
+Be careful when setting to appropriately handle the shapes being
+added or removed from the <strong>body</strong>.</p>
+<p class="last"><strong>shape_type</strong> (str): The type of shape this components <strong>body</strong>
+was initialized with. Only set if you have been modifying your <strong>body</strong>
+manually and you know what you’re doing.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_cymunk.physics.CymunkPhysics">
+<em class="property">class </em><code class="descclassname">kivent_cymunk.physics.</code><code class="descname">CymunkPhysics</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_cymunk.physics.CymunkPhysics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processing Depends On: 
+<a class="reference internal" href="gamesystems.html#kivent_core.systems.position_systems.PositionSystem2D" title="kivent_core.systems.position_systems.PositionSystem2D"><code class="xref py py-class docutils literal"><span class="pre">PositionSystem2D</span></code></a>,
+<a class="reference internal" href="gamesystems.html#kivent_core.systems.rotate_systems.RotateSystem2D" title="kivent_core.systems.rotate_systems.RotateSystem2D"><code class="xref py py-class docutils literal"><span class="pre">RotateSystem2D</span></code></a>,
+<a class="reference internal" href="#kivent_cymunk.physics.CymunkPhysics" title="kivent_cymunk.physics.CymunkPhysics"><code class="xref py py-class docutils literal"><span class="pre">CymunkPhysics</span></code></a></p>
+<p>CymunkPhysics is a <strong>GameSystem</strong> that interacts with the
+Cymunk Port of the <a class="reference external" href="https://chipmunk-physics.net/">Chipmunk2d Physics Engine</a>.  Check the <a class="reference external" href="https://chipmunk-physics.net/documentation.php">docs for Chipmunk2d</a> to get an
+overview of how to work with Cymunk.</p>
+<p>This GameSystem is dependent on the
+<a class="reference internal" href="gamesystems.html#kivent_core.systems.position_systems.PositionComponent2D" title="kivent_core.systems.position_systems.PositionComponent2D"><code class="xref py py-class docutils literal"><span class="pre">PositionComponent2D</span></code></a>
+and <a class="reference internal" href="gamesystems.html#kivent_core.systems.rotate_systems.RotateComponent2D" title="kivent_core.systems.rotate_systems.RotateComponent2D"><code class="xref py py-class docutils literal"><span class="pre">RotateComponent2D</span></code></a>
+in addition to its own component. It will write out the position
+and rotation of the <cite>cymunk.Body</cite> associated with your entity every
+frame to these components.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>space</strong> (ObjectProperty): The Cymunk Space the physics system is
+using</p>
+<p><strong>gravity</strong> (ListProperty): The (x, y) gravity vector for the space.</p>
+<p><strong>iterations</strong> (NumericProperty): Number of solving iterations
+for the Space</p>
+<p><strong>sleep_time_threshold</strong> (NumericProperty): How long a Body is
+inactive in order to be slept in the space</p>
+<p><strong>collision_slop</strong> (NumericProperty): Collision_slop for the Space;
+i.e. how much collisions can overlap.</p>
+<p class="last"><strong>damping</strong> (NumericProperty): Damping for the Space. This is sort of
+like a global kind of friction. All velocities will be reduced to
+<code class="docutils literal"><span class="pre">damping*initial_velocity</span></code> every update tick.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="kivent_cymunk.physics.CymunkPhysics.add_collision_handler">
+<code class="descname">add_collision_handler</code><span class="sig-paren">(</span><em>self</em>, <em>int type_a</em>, <em>int type_b</em>, <em>begin_func=None</em>, <em>pre_solve_func=None</em>, <em>post_solve_func=None</em>, <em>separate_func=None</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_cymunk.physics.CymunkPhysics.add_collision_handler" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">type_a (int): the collision_type for the first Shape in the
+collision</p>
+<p class="last">type_b (int): the collision_type for the second Shape in the
+collision</p>
+</dd>
+</dl>
+<p>Kwargs:</p>
+<blockquote>
+<div><p>begin_func (function): called (once) when collision between 2 
+shapes first begins</p>
+<p>pre_solve_func (function): called before every solve of the physics
+space where a collision persists</p>
+<p>post_solve_func (function): called after every solve of the physics
+space where a collision persists</p>
+<p>separate_func (function): called (once) when collision between 2
+shapes ends.</p>
+</div></blockquote>
+<p>Function to add collision handlers for collisions between
+pairs of collision_type. Collision functions
+for begin_func and pre_solve_func should return True if you want
+the collision to be solved, and False if you want the collisions
+to be ignored</p>
+<p>Functions should accept args: space, arbiter
+You can then retrieve the <code class="docutils literal"><span class="pre">entity_id</span></code>’s of the colliding shapes with:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">first_id</span> <span class="o">=</span> <span class="n">arbiter</span><span class="o">.</span><span class="n">shapes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">data</span>
+<span class="n">second_id</span> <span class="o">=</span> <span class="n">arbiter</span><span class="o">.</span><span class="n">shapes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">data</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_cymunk.physics.CymunkPhysics.clear_component">
+<code class="descname">clear_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_cymunk.physics.CymunkPhysics.clear_component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_cymunk.physics.CymunkPhysics.create_component">
+<code class="descname">create_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int entity_id</em>, <em>str zone_name</em>, <em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_cymunk.physics.CymunkPhysics.create_component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_cymunk.physics.CymunkPhysics.init_component">
+<code class="descname">init_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em>, <em>unsigned int entity_id</em>, <em>str zone_name</em>, <em>dict args</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_cymunk.physics.CymunkPhysics.init_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Args:</p>
+<blockquote>
+<div>args (dict): dict containing the kwargs required in order to
+initialize a Cymunk Body with one or more Shape attached. Shape
+types supported are ‘box’, ‘circle’, ‘poly’, and ‘segment’.</div></blockquote>
+<p>The args dict looks like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;entity_id&#39;</span><span class="p">:</span> <span class="nb">id</span><span class="p">,</span>
+    <span class="s1">&#39;main_shape&#39;</span><span class="p">:</span> <span class="n">string_shape_name</span><span class="p">,</span>
+    <span class="s1">&#39;velocity&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span>
+    <span class="s1">&#39;vel_limit&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="s1">&#39;position&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span>
+    <span class="s1">&#39;angle&#39;</span><span class="p">:</span> <span class="n">radians</span><span class="p">,</span>
+    <span class="s1">&#39;angular_velocity&#39;</span><span class="p">:</span> <span class="n">radians</span><span class="p">,</span>
+    <span class="s1">&#39;ang_vel_limit&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="s1">&#39;mass&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="s1">&#39;col_shapes&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">col_shape_dicts</span><span class="p">],</span>
+    <span class="s1">&#39;moment&#39;</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+<p>moment (if not specified) will be computed from component shapes</p>
+<p>The col_shape_dicts look like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">col_shape_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;shape_type&#39;</span><span class="p">:</span> <span class="n">string_shape_name</span><span class="p">,</span>
+    <span class="s1">&#39;elasticity&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="s1">&#39;collision_type&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="s1">&#39;shape_info&#39;</span><span class="p">:</span> <span class="n">shape_specific_dict</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+<p>shape_info dicts looke like this, depending on their shape:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">box</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="s1">&#39;height&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="s1">&#39;mass&#39;</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="p">}</span>
+
+<span class="n">circle</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;inner_radius&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="s1">&#39;outer_radius&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="s1">&#39;mass&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="s1">&#39;offset&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="p">}</span>
+
+<span class="n">poly</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;mass&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="s1">&#39;vertices&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="s1">&#39;offset&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">)}</span>
+
+<span class="n">segment</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;mass&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+    <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+    <span class="s1">&#39;radius&#39;</span><span class="p">:</span> <span class="nb">float</span> <span class="p">(</span><span class="n">beveling</span> <span class="n">radius</span> <span class="k">for</span> <span class="n">segment</span><span class="p">),</span>
+    <span class="p">}</span>
+
+<span class="n">If</span> <span class="n">you</span> <span class="n">want</span> <span class="n">a</span> <span class="n">solid</span> <span class="n">circle</span> <span class="nb">set</span> <span class="n">inner_radius</span> <span class="n">to</span> <span class="mf">0.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_cymunk.physics.CymunkPhysics.init_physics">
+<code class="descname">init_physics</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_cymunk.physics.CymunkPhysics.init_physics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Internal function that handles initalizing the Cymunk Space</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_cymunk.physics.CymunkPhysics.on_damping">
+<code class="descname">on_damping</code><span class="sig-paren">(</span><em>self</em>, <em>instance</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_cymunk.physics.CymunkPhysics.on_damping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event handler that sets the damping of <strong>space</strong>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_cymunk.physics.CymunkPhysics.on_gravity">
+<code class="descname">on_gravity</code><span class="sig-paren">(</span><em>self</em>, <em>instance</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_cymunk.physics.CymunkPhysics.on_gravity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event handler that sets the gravity of <strong>space</strong>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_cymunk.physics.CymunkPhysics.query_bb">
+<code class="descname">query_bb</code><span class="sig-paren">(</span><em>self</em>, <em>list box_to_query</em>, <em>ignore_groups=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_cymunk.physics.CymunkPhysics.query_bb" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>box_to_query (list): should be a list of [x, y, x+w, y+h] where
+x, y is the bottom left hand corner of the box, and w, h is
+the width and height of the box.</dd>
+<dt>Kwargs:</dt>
+<dd>ignore_groups (list): list of collision_types to ignore during
+this query.</dd>
+</dl>
+<p>Queries collisions inside a box.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_cymunk.physics.CymunkPhysics.query_segment">
+<code class="descname">query_segment</code><span class="sig-paren">(</span><em>self</em>, <em>vect_start</em>, <em>vect_end</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_cymunk.physics.CymunkPhysics.query_segment" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">vect_start (tuple): (x1, y1) start point of segment.</p>
+<p class="last">vect_end (tuple): (x2, y2) end point of segment.</p>
+</dd>
+</dl>
+<p>Queries collisions between (x1, y1) and (x2, y2)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_cymunk.physics.CymunkPhysics.register_collision_type">
+<code class="descname">register_collision_type</code><span class="sig-paren">(</span><em>self</em>, <em>str type_name</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_cymunk.physics.CymunkPhysics.register_collision_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_cymunk.physics.CymunkPhysics.remove_component">
+<code class="descname">remove_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_cymunk.physics.CymunkPhysics.remove_component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_cymunk.physics.CymunkPhysics.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>self</em>, <em>dt</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_cymunk.physics.CymunkPhysics.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handles update of the cymunk space and updates the component data
+for position and rotate components.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="interaction">
+<h2>Interaction<a class="headerlink" href="#interaction" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_cymunk.interaction.CymunkTouchComponent">
+<em class="property">class </em><code class="descclassname">kivent_cymunk.interaction.</code><code class="descname">CymunkTouchComponent</code><a class="headerlink" href="#kivent_cymunk.interaction.CymunkTouchComponent" title="Permalink to this definition">¶</a></dt>
+<dd><p>The CymunkTouchComponent keeps track of a PivotJoint and a Body that has
+not been added to the cymunk Space in order to control physics objects
+actually added to the world. The PivotJoint is bound to the <strong>touch_body</strong>
+of this component and the Body of the touched Entity.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>entity_id</strong> (unsigned int): The entity_id this component is currently
+associated with. Will be &lt;unsigned int&gt;-1 if the component is
+unattached.</p>
+<p><strong>touch_body</strong> (Body): This is a rogue body (unattached to the space)
+that influences another Body through a cymunk.constraint interaction.</p>
+<p><strong>pivot</strong> (PivotJoint): The constraint that acts on this body and the
+one it is attached to.</p>
+<p><strong>max_force</strong> (float): Maximum force the joint can exert on the
+attached body.</p>
+<p class="last"><strong>error_bias</strong> (float): The rate at which the joint is corrected.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_cymunk.interaction.CymunkTouchSystem">
+<em class="property">class </em><code class="descclassname">kivent_cymunk.interaction.</code><code class="descname">CymunkTouchSystem</code><a class="headerlink" href="#kivent_cymunk.interaction.CymunkTouchSystem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processing Depends On: PositionSystem2D, CymunkTouchSystem</p>
+<p>The CymunkTouchSystem provides a way to interact with the entities in a
+CymunkPhysics GameSystem, either through touches or mouse clicks. Touched
+entities will be ‘dragged’. This system will generate new entities when
+receiving an on_touch_down event that collides with an entity in the
+space of the CymunkPhysics GameSystem with system_id: <strong>physics_system</strong>.</p>
+<p>The entities will be generated in zone <strong>zone_to_use</strong> so make sure to set
+this up appropriately. This zone should not need more than 100 entities
+unless you are planning on receiving very many simultaneous touches.</p>
+<p>This system will be dependent on its own component and a
+PositionComponent2D (default system_id: ‘position’) for processing.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>physics_system</strong> (StringProperty): Name (system_id) of the physics
+system to use with this system. Defaults to ‘cymunk_physics’.</p>
+<p><strong>touch_radius</strong> (NumericProperty): Size of the touch query to see
+which entities we are touching. Defaults to 20.</p>
+<p><strong>max_force</strong> (NumericProperty): Maximum force the PivotJoint will be
+able to exert. Defaults to 2500000.</p>
+<p><strong>max_bias</strong> (NumericProperty): The rate at which the joints for
+touch entities will be corrected. Defaults to 10000.</p>
+<p><strong>ignore_groups</strong> (ListProperty): List of collision_type (int) to
+ignore when performing the collision query in on_touch_down. Defaults
+to [].</p>
+<p class="last"><strong>zone_to_use</strong> (StringProperty): Name of the zone to create entities
+in. Defaults to ‘touch’.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="kivent_cymunk.interaction.CymunkTouchSystem.clear_component">
+<code class="descname">clear_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_cymunk.interaction.CymunkTouchSystem.clear_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clears the component at <strong>component_index</strong>. We must set the
+pointers in the C struct to empty and the references in the
+CymunkTouchComponent to None.</p>
+<p>Args:</p>
+<blockquote>
+<div>component_index (unsigned int): Component to remove.</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_cymunk.interaction.CymunkTouchSystem.init_component">
+<code class="descname">init_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em>, <em>unsigned int entity_id</em>, <em>str zone</em>, <em>dict args</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_cymunk.interaction.CymunkTouchSystem.init_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>The entities for this system are typically generated by its
+on_touch_down event. However, if you do need to create a component
+the args dict looks like:</p>
+<p>You will also definitely want to look over how this GameSystem
+manipulates its components in the on_touch_down, on_touch_move,
+and on_touch_up event handling.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>component_index (unsigned int): Index of the component to be
+initialized.</p>
+<p>entity_id (usigned int): Identity of the entity we will be
+adding this component to.</p>
+<p>zone (str): Name of the zone this entities memory will use.</p>
+<p>args (dict): Contains the arguments for creating the PivotJoint.
+Described below.</p>
+</div></blockquote>
+<p>Args dict looks like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;touch_pos&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+    <span class="c1">#Tuple of the position this touch is occuring at</span>
+
+    <span class="s1">&#39;touched_ent&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">unsigned</span> <span class="nb">int</span><span class="p">),</span>
+    <span class="c1">#The id of the entity that was touched.</span>
+
+    <span class="s1">&#39;max_bias&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="c1">#The error correction rate for this connection</span>
+
+    <span class="s1">&#39;max_force&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="c1">#The maximum amount of force this joint can generate.</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_cymunk.interaction.CymunkTouchSystem.on_touch_down">
+<code class="descname">on_touch_down</code><span class="sig-paren">(</span><em>self</em>, <em>touch</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_cymunk.interaction.CymunkTouchSystem.on_touch_down" title="Permalink to this definition">¶</a></dt>
+<dd><p>The touch down handling for the CymunkTouchSystem queries the
+CymunkPhysics GameSystem with system_id: <strong>physics_system</strong> to see
+if any touches occur withtin a square of x +- <strong>touch_radius</strong>, y +-
+<strong>touch_radius</strong>.</p>
+<p>If we do collide with an entity, we will take the first one and
+bind a new rogue body (unattached from the physics Space) together
+with the touched entity’s physics Body by creating a PivotJoint.
+The new entity representing the PivotJoint will be created in zone:
+<strong>zone_to_use</strong>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_cymunk.interaction.CymunkTouchSystem.on_touch_move">
+<code class="descname">on_touch_move</code><span class="sig-paren">(</span><em>self</em>, <em>touch</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_cymunk.interaction.CymunkTouchSystem.on_touch_move" title="Permalink to this definition">¶</a></dt>
+<dd><p>The touch move handling keeps track of the touch entity generated in
+on_touch_down, updating its position to the new position of the touch.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_cymunk.interaction.CymunkTouchSystem.on_touch_up">
+<code class="descname">on_touch_up</code><span class="sig-paren">(</span><em>self</em>, <em>touch</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_cymunk.interaction.CymunkTouchSystem.on_touch_up" title="Permalink to this definition">¶</a></dt>
+<dd><p>On touch up, if we have previously set the ud[‘ent_id’] in
+on_touch_down we will remove this entity from the GameWorld as the
+touch is now over.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_cymunk.interaction.CymunkTouchSystem.remove_component">
+<code class="descname">remove_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_cymunk.interaction.CymunkTouchSystem.remove_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Before we clear the component we perform some cleanup on the
+physics objects, removing the _pivot PivotJoint from our Space. We
+also remove our entity from the <strong>entity_components</strong> aggregator at
+this time.</p>
+<p>Args:</p>
+<blockquote>
+<div>component_index (unsigned int): Component to remove.</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_cymunk.interaction.CymunkTouchSystem.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>self</em>, <em>float dt</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_cymunk.interaction.CymunkTouchSystem.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="particles.html" class="btn btn-neutral float-right" title="Particles" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="managers.html" class="btn btn-neutral" title="Managers" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2017, Jacob Kovac.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

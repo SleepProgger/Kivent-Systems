@@ -1,0 +1,639 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Rendering &mdash; KivEnt 2.2.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="KivEnt 2.2.0 documentation" href="index.html"/>
+        <link rel="next" title="Memory Handlers" href="memory_handlers.html"/>
+        <link rel="prev" title="Particles" href="particles.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> KivEnt
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="gameworld.html">GameWorld</a></li>
+<li class="toctree-l1"><a class="reference internal" href="entity.html">Entity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gamesystems.html">Game Systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="managers.html">Managers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="physics.html">The Cymunk Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="particles.html">Particles</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Rendering</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#vbos">VBOs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#instructions">Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#models">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#vertex-formats">Vertex Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#frame-objects">Frame Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#batching">Batching</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memory_handlers.html">Memory Handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tiled.html">The Maps Module</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">KivEnt</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Rendering</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/rendering.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="rendering">
+<h1>Rendering<a class="headerlink" href="#rendering" title="Permalink to this headline">¶</a></h1>
+<p><strong>Most of these Classes have cdefed functions that cannot be read by
+Sphinx. Read the source if you want to find out more about using them.</strong></p>
+<div class="section" id="vbos">
+<h2>VBOs<a class="headerlink" href="#vbos" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.rendering.fixedvbo.FixedVBO">
+<em class="property">class </em><code class="descclassname">kivent_core.rendering.fixedvbo.</code><code class="descname">FixedVBO</code><a class="headerlink" href="#kivent_core.rendering.fixedvbo.FixedVBO" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a VBO that has a fixed size for the amount of vertex data. While
+the MemoryBlock will hold a fixed amount of data, it is possible we will
+upload a different amount of data per-frame to GL. This allows us to render
+up to the maximum amount that will fill MemoryBlock without having to
+reallocate memory on the cpu side of things.</p>
+<dl class="docutils">
+<dt><strong>Attributes: (Cython Access Only)</strong></dt>
+<dd><p class="first"><strong>memory_block</strong> (MemoryBlock): MemoryBlock holding the data for this
+VBO.</p>
+<p><strong>usage</strong> (int): The usage hint for this VBO, currently only
+GL_STREAM_DRAW is supported. Pass in ‘stream’ when initializing.
+Any other argument will raise VBOUsageException.</p>
+<p><strong>target</strong> (int): The target of the buffer when binding. Can be either
+GL_ARRAY_BUFFER or GL_ELEMENT_ARRAY_BUFFER at the moment. When
+initializing pass in either ‘array’ or ‘elements’ respectively. Any
+other argument with raise a VBOTargetException</p>
+<p><strong>flags</strong> (short): State used by Kivy during rendering.</p>
+<p><strong>id</strong> (GLuint): The id assigned by GL for this buffer. Returned from
+glGenBuffers.</p>
+<p><strong>size_last_frame</strong> (unsigned int): The number of elements rendered
+during the last frame. Used to determine whether we should
+glBufferData or glBufferSubData when updating the vbo.</p>
+<p><strong>data_size</strong> (unsigned int): The amount of data to be rendered next
+frame.</p>
+<p class="last"><strong>vertex_format</strong> (KEVertexFormat): The object containing data about
+the vertex format for this VBO.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="instructions">
+<h2>Instructions<a class="headerlink" href="#instructions" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.rendering.cmesh.CMesh">
+<em class="property">class </em><code class="descclassname">kivent_core.rendering.cmesh.</code><code class="descname">CMesh</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.rendering.cmesh.CMesh" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="models">
+<h2>Models<a class="headerlink" href="#models" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.rendering.model.VertexModel">
+<em class="property">class </em><code class="descclassname">kivent_core.rendering.model.</code><code class="descname">VertexModel</code><a class="headerlink" href="#kivent_core.rendering.model.VertexModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>A VertexModel allows you to interact with arbitrary structs with GL types.
+A Model is made up of 2 main parts, the vertex data associated with each
+vertex in the model, and the indices describing how those vertices are
+related. For instance a sprite would be represented as a 4 vertex quad,
+with indices: [0, 1, 2, 2, 3, 0]</p>
+<p>The quad is constructed out of 2 triangle faces, the triangle reprsented by
+vertices 0, 1, 2, and the triangle represented by 2, 3, 0, this looks like:</p>
+<p>A Vertex can hold arbitrary data, but it will typically hold its x, y
+position on the screen at the very least, and very often the u,v position
+mapping texture coordinates to the geometric.</p>
+<p>A vertex of the model can be accessed by indexing into the object</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">vertex_model</span> <span class="o">=</span> <span class="n">VertexModel</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">format_config</span><span class="p">,</span> <span class="n">index_buffer</span><span class="p">,</span>
+    <span class="n">vertex_buffer</span><span class="p">,</span> <span class="s1">&#39;my_model_name&#39;</span><span class="p">)</span>
+<span class="n">vertex</span> <span class="o">=</span> <span class="n">vertex_model</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This will retrieve a Vertex object that can manipulate the data of the
+specified vertex. You should be careful about holding onto the vertex
+objects as if you either adjust the <strong>index_count</strong> or <strong>vertex_count</strong>
+the location in memory WILL change, and the old objects will not manipulate
+the correct data. In addition it is possible for a VertexModel to be GC’d
+while you keep a Vertex alive, also resulting into the Vertex manipulating
+the wrong data.</p>
+<p>You can change the size of either the index or vertex data on a model, but
+you cannot change its FormatConfig. If you need to change a model’s vertex
+format, you should instead create a new model. If you change a model, you
+should first unbatch all entities that are using that model and then
+rebatch them after changes have been completed. If your model is only used
+by a single entity, the RenderComponent properties will assist in doing
+this.</p>
+<p>[Add Note about model entity tracking when implemented]</p>
+<p><strong>Attributes:</strong></p>
+<dl class="docutils">
+<dt><strong>Attributes: (Cython Access Only)</strong></dt>
+<dd><p class="first"><strong>vertices_block</strong> (MemoryBlock): The MemoryBlock holding the vertex
+data for this model.</p>
+<p><strong>indices_block</strong> (MemoryBlock): The MemoryBlock holding the indices
+data for this model.</p>
+<p><strong>index_buffer</strong> (Buffer):  The Buffer from which we will actually
+allocate the <strong>indices_block</strong>. Used when <strong>index_count</strong> changes.</p>
+<p class="last"><strong>vertex_buffer</strong> (Buffer):  The Buffer from which we will actually
+allocate the <strong>vertices_block</strong>. Used when <strong>vertex_count</strong> changes.</p>
+</dd>
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>index_count</strong> (unsigned int): The number of indices in your model.
+Unbatch any active entities before setting and rebatch afterwards.</p>
+<p><strong>vertex_count</strong> (unsigned int): The number of vertices in your model.
+Unbatch any active entities before setting and rebatch afterwards.</p>
+<p><strong>name</strong> (str): The name of this model, as kept track of by the
+ModelManager.</p>
+<p><strong>format_config</strong> (FormatConfig): The vertex format for this model.
+Will be set on creation and should not be changed.</p>
+<p><strong>vertices</strong> (list): Returns a list of Vertex objects for every vertex
+in the model. Be careful about keeping the results around. You need to
+retrieve a new copy of the list if you for instance change
+<strong>vertex_count</strong>. You can supply a dict of key: index of vertex, value
+dict of attribute, value pairs in order to set all vertices at once.</p>
+<p>For instance:</p>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">vertices</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;pos&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.</span><span class="p">),</span> <span class="n">uvs</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">)},</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;pos&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">),</span> <span class="n">uvs</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)},</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;pos&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">5.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">),</span> <span class="n">uvs</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)},</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;pos&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">5.</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.</span><span class="p">),</span> <span class="n">uvs</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">)},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p><strong>indices</strong> (list): Returns a list of unsigned shorts specifying the
+indices for this model. This is a copy of the actual data, do not
+manipulate the returned list directly instead:</p>
+<blockquote class="last">
+<div><div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">vertex_model</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">new</span> <span class="n">index</span> <span class="n">data</span><span class="p">]</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="method">
+<dt id="kivent_core.rendering.model.VertexModel.add_all_vertex_attribute">
+<code class="descname">add_all_vertex_attribute</code><span class="sig-paren">(</span><em>self</em>, <em>str attribute_name</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.rendering.model.VertexModel.add_all_vertex_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds value to the specified attribute of all vertices. More optimized
+than doing the same thing on the list provided by <strong>vertices</strong> as only
+one Vertex will be made and its pointer shifted.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">attribute_name (str): The name of the attribute we will be
+modifying.</p>
+<p class="last">value (any): The value or values to set the attributes of each
+vertex to. If the attribute is an array, you can either provide
+a separate value for each place or one value that will be added
+to all places.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.rendering.model.VertexModel.center_model">
+<code class="descname">center_model</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.rendering.model.VertexModel.center_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Centers the models vertices around (0, 0). Only works if the 
+vertex format has a pos method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.rendering.model.VertexModel.copy_vertex_model">
+<code class="descname">copy_vertex_model</code><span class="sig-paren">(</span><em>self</em>, <em>VertexModel to_copy</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.rendering.model.VertexModel.copy_vertex_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copies all the data from the provided VertexModel to this one. Will
+possibly change <strong>vertex_count</strong> and <strong>index_count</strong> so make sure to
+unbatch and rebatch any Entity referencing this model before and after
+calling copy_vertex_model. If you know the models have the same counts
+you do not need to do so.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>to_copy (VertexModel): The model to copy.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.rendering.model.VertexModel.flip_textured_rectangle_horizontally">
+<code class="descname">flip_textured_rectangle_horizontally</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.rendering.model.VertexModel.flip_textured_rectangle_horizontally" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flip the texture of the quad horizontally
+Will assume your using a textured quad model.
+Will assume your vertex format have a ‘pos’ and ‘uvs’ array of size 2.</p>
+<p>Do not use if your model is not a textured quad.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.rendering.model.VertexModel.flip_textured_rectangle_vertically">
+<code class="descname">flip_textured_rectangle_vertically</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.rendering.model.VertexModel.flip_textured_rectangle_vertically" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flip the texture of the quad horizontally
+Will assume your using a textured quad model.
+Will assume your vertex format have a ‘pos’ and ‘uvs’ array of size 2.</p>
+<p>Do not use if your model is not a textured quad.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.rendering.model.VertexModel.free_memory">
+<code class="descname">free_memory</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.rendering.model.VertexModel.free_memory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Frees the allocated memory. Do not use the VertexModel after
+free_memory has been called. Typically called internally by the
+ModelManager.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.rendering.model.VertexModel.mult_all_vertex_attribute">
+<code class="descname">mult_all_vertex_attribute</code><span class="sig-paren">(</span><em>self</em>, <em>str attribute_name</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.rendering.model.VertexModel.mult_all_vertex_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mulitplies value to the specified attribute of all vertices. More
+optimized than doing the same thing on the list provided by <strong>vertices</strong>
+as only one Vertex will be made and its pointer shifted.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">attribute_name (str): The name of the attribute we will be
+modifying.</p>
+<p class="last">value (any): The value or values to set the attributes of each
+vertex to. If the attribute is an array, you can either provide
+a separate value for each place or one value that will be mulitplied
+to all places.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.rendering.model.VertexModel.set_all_vertex_attribute">
+<code class="descname">set_all_vertex_attribute</code><span class="sig-paren">(</span><em>self</em>, <em>str attribute_name</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.rendering.model.VertexModel.set_all_vertex_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets all vertices attribute to the provided value. More optimized than
+doing the same thing on the list provided by <strong>vertices</strong> as only one
+Vertex will be made and its pointer shifted.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">attribute_name (str): The name of the attribute we will be
+modifying.</p>
+<p class="last">value (any): The value or values to set the attributes of each
+vertex to.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.rendering.model.VertexModel.set_textured_rectangle">
+<code class="descname">set_textured_rectangle</code><span class="sig-paren">(</span><em>self</em>, <em>float width</em>, <em>float height</em>, <em>list uvs</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.rendering.model.VertexModel.set_textured_rectangle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare a 4 vertex_count, 6 index_count textured quad (sprite) of
+size: width x height. Normally called internally when creating sprites.
+Will assume your vertex format have a ‘pos’ and ‘uvs’ array of size 2.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">width (float): Width of the quad.</p>
+<p>height (float): Height of the quad</p>
+<p class="last">uvs (list): Should be a list of 4 values representing the uv texture
+coordinates of the quad. For a texture that took up the whole size
+of the image this will be [0., 0., 1., 1.]. uv coordinates are
+normalized inside their texture.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_core.rendering.model.Vertex">
+<em class="property">class </em><code class="descclassname">kivent_core.rendering.model.</code><code class="descname">Vertex</code><a class="headerlink" href="#kivent_core.rendering.model.Vertex" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Vertex class allows you to interface with the underlying C structs
+representing a VertexModel’s vertices from Python. It does this by
+automatically wrapping the struct based on data from
+kivent_core.rendering.vertex_formats.</p>
+<p>You will not create a Vertex manually, instead it will typically be
+returned from indexing into a VertexModel. For instance:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">vertex</span> <span class="o">=</span> <span class="n">instance_of_VertexModel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1">#retrieve the first vertex</span>
+<span class="n">pos</span> <span class="o">=</span> <span class="n">vertex</span><span class="o">.</span><span class="n">pos</span> <span class="c1">#retrieve data from a vertex</span>
+<span class="n">vertex</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">]</span> <span class="c1">#set data</span>
+</pre></div>
+</div>
+<p>The attributes for a Vertex will depend on the actual vertex format of the
+model. See the documentation for
+kivent_core.rendering.vertex_formats.VertexFormatRegister for more
+information.</p>
+<p>Keep in mind: When getting data from a Vertex you are retrieving a copy of
+that data. Not the original, modifying the returned list will not affect
+the underlying data, instead you must call set.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="vertex-formats">
+<h2>Vertex Formats<a class="headerlink" href="#vertex-formats" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.rendering.vertex_format.KEVertexFormat">
+<em class="property">class </em><code class="descclassname">kivent_core.rendering.vertex_format.</code><code class="descname">KEVertexFormat</code><span class="sig-paren">(</span><em>size_in_bytes</em>, <em>*fmt</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.rendering.vertex_format.KEVertexFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>VertexFormat is used to describe the layout of the vertex data stored
+in vertex arrays/vbo’s. It differs from the Kivy VertexFormat by tracking
+the offsets of the individual attributes so that you can interleave
+non-homogenous data types.</p>
+<dl class="docutils">
+<dt>Supported attribute types are:</dt>
+<dd>‘float’: GLfloat
+‘byte’: GLbyte
+‘ubyte’: GLubyte
+‘int’: GLint
+‘uint’: GLuint
+‘short’: GLshort
+‘ushort’: GLushort</dd>
+<dt><strong>Attributes: (Cython Access Only)</strong></dt>
+<dd>attr_offsets (Py_ssize_t*): Pointer to the array containing the
+offsets for each attribute of the VertexFormat. Separate from
+the rest of the data to maintain compatibility with the Kivy
+VertexFormat.</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="frame-objects">
+<h2>Frame Objects<a class="headerlink" href="#frame-objects" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.rendering.frame_objects.FixedFrameData">
+<em class="property">class </em><code class="descclassname">kivent_core.rendering.frame_objects.</code><code class="descname">FixedFrameData</code><a class="headerlink" href="#kivent_core.rendering.frame_objects.FixedFrameData" title="Permalink to this definition">¶</a></dt>
+<dd><p>The FixedFrameData manages 2 FixedVBO, suitable for rendering using the
+GL_TRIANGLES mode. One FixedVBO will hold the indices data and the other
+the actual vertex data.</p>
+<dl class="docutils">
+<dt><strong>Attributes: (Cython Access Only)</strong></dt>
+<dd><p class="first"><strong>index_vbo</strong> (FixedVBO): The FixedVBO holding indices data. Will
+have the target: GL_ELEMENTS_ARRAY_BUFFER.</p>
+<p class="last"><strong>vertex_vbo</strong> (FixedVBO): The FixedVBO holding vertex data. Will
+have the target: GL_ARRAY_BUFFER.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="batching">
+<h2>Batching<a class="headerlink" href="#batching" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.rendering.batching.IndexedBatch">
+<em class="property">class </em><code class="descclassname">kivent_core.rendering.batching.</code><code class="descname">IndexedBatch</code><a class="headerlink" href="#kivent_core.rendering.batching.IndexedBatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>The IndexedBatch represents a collection of FixedFrameData vbos,
+suitable for rendering using GL_TRIANGLES mode. Data will be split into
+both an indices VBO and a vertices VBO, and explicit multibuffering
+will be performed. Drawing will be performed by calling glDrawElements.
+Each frame the FixedFrameData at position <strong>current_frame</strong> %
+<strong>frame_count</strong> in the <strong>frame_data</strong> list will be used for rendering.</p>
+<p><strong>Attributes: (Cython Access Only)</strong></p>
+<blockquote>
+<div><p><strong>frame_data</strong> (list): List of FixedFrameData objects for this
+batch.</p>
+<p><strong>current_frame</strong> (unsigned int): Every frame rendered (calling
+<strong>draw_frame</strong>) will increment this by 1.</p>
+<p><strong>frame_count</strong> (unsigned int): Number of FixedFrameData objects
+in the <strong>frame_data</strong> list. The number of buffers to use.</p>
+<p><strong>tex_key</strong> (unsigned int): Identifier for the texture resource that
+will be used when drawing the entities in this batch. All entities must
+share the same texture.</p>
+<p><strong>batch_id</strong> (unsigned int): The identifier for this batch, will be
+set by the <strong>BatchManager</strong> controlling this batch. Defaults to
+&lt;unsigned int&gt;-1.</p>
+<p><strong>mode</strong> (GLuint): The drawing mode for this batch. Will be one of
+GL_TRIANGLES, GL_LINES, GL_POINTS, GL_TRIANGLE_FAN, GL_LINE_STRIP,
+GL_LINE_LOOP, GL_TRIANGLE_STRIP.</p>
+<p><strong>mesh_instruction</strong> (object): Reference to the actual instruction
+that will be added to the canvas of the parent renderer.</p>
+<p><strong>entity_components</strong> (ComponentPointerAggregator): Helper object
+for retrieving pointers to the components of entities added to this
+batch.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_core.rendering.batching.BatchManager">
+<em class="property">class </em><code class="descclassname">kivent_core.rendering.batching.</code><code class="descname">BatchManager</code><a class="headerlink" href="#kivent_core.rendering.batching.BatchManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>The BatchManager is responsible for managing a fixed amount of
+IndexedBatch to render more entities than will fit in a single
+IndexedBatch. It handles appropriate creation and reusing of these batches
+for you, and typically you will only care about <strong>batch_entity</strong> and
+<strong>unbatch_entity</strong> functions. All entities drawn by BatchManager must
+share the same KEVertexFormat, however they can have different textures.</p>
+<p>Keep in mind that each texture used will require a different batch so
+you should be careful not to use too many textures as the maximum amount
+of textures that can be used is the <strong>max_batches</strong>, and then we will be
+unable to render more than one batch worth of vertices per texture. This
+means you should try to combine textures into a single atlas as often as
+possible.</p>
+<p><em>Note at the moment only GL_TRIANGLES drawing mode is supported.</em></p>
+<p><strong>Attributes: (Cython Access Only)</strong></p>
+<blockquote>
+<div><p><strong>batch_block</strong> (MemoryBlock): The MemoryBlock reserved for holding
+vertex data of the IndexedBatch.</p>
+<p><strong>indices_block</strong> (MemoryBlock): The MemoryBlock reserved for holding
+indices data of the IndexedBatch.</p>
+<p><strong>batches</strong> (list): A list containing the active IndexedBatch objects.</p>
+<p><strong>free_batches</strong> (list): A list containing any currently unused batches
+waiting to be reused.</p>
+<p><strong>batch_groups</strong> (dict): Grouping of batches that share the same
+texture.</p>
+<p><strong>gameworld</strong> (object): Reference to the active gameworld, used when
+creating ComponentPointerAggregator to make iterating an IndexedBatch
+easier when rendering.</p>
+<p><strong>batch_count</strong> (unsigned int): The number of active batches either in
+use or waiting in the free list for reuse.</p>
+<p><strong>max_batches</strong> (unsigned int): The maximum number of batches that can
+be used.</p>
+<p><strong>frame_count</strong> (unsigned int): The number of frames that will be
+multibuffered for each IndexedBatch.</p>
+<p><strong>slots_per_block</strong> (unsigned int): The number of vertices held in each
+IndexedBatch.</p>
+<p><strong>index_slots_per_block</strong> (unsigned int): The number of indices held in
+each IndexedBatch. <em>Note: OpenGL ES2 have a limit of 65,535</em></p>
+<p><strong>vbo_size_in_kb</strong> (unsigned int): The size of the batch VBO in
+kibibytes.</p>
+<p><strong>mode_str</strong> (str): The human readable mode of the rendering. Can be
+‘triangles’, ‘points’, ‘line_strip’, ‘line_loop’, ‘lines’,
+‘triangle_strip’, or ‘triangle_fan’.</p>
+<p><strong>mode</strong> (GLuint): The GL translation of the <strong>mode_str</strong>. Will be
+either GL_TRIANGLES, GL_POINTS, GL_LINE_STRIP, GL_LINE_LOOP, GL_LINES,
+GL_TRIANGLE_STRIP, or GL_TRIANGLE_FAN.</p>
+<p><strong>vertex_format</strong> (KEVertexFormat): The KEVertexFormat containing
+information for binding the format of the vertices during rendering.</p>
+<p><strong>canvas</strong> (object): The canvas of the parent GameSystem that all
+batches will be drawn to.</p>
+<p><strong>system_names</strong> (list): List of the system_names that we should
+write pointers to in the ComponentPointerAggregator for rendering.</p>
+<p><strong>master_buffer</strong> (Buffer): The Buffer from which all memory will be
+allocated.</p>
+<p><strong>ent_per_batch</strong> (unsigned int): An estimation of the number of
+entities that will fit in each batch. The ComponentPointerAggregator
+will be this size per batch. Created during initialization by dividing
+the <strong>slots_per_block</strong> by the <strong>smallest_vertex_count</strong> init arg.</p>
+</div></blockquote>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="memory_handlers.html" class="btn btn-neutral float-right" title="Memory Handlers" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="particles.html" class="btn btn-neutral" title="Particles" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2017, Jacob Kovac.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

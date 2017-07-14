@@ -1,0 +1,1678 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Game Systems &mdash; KivEnt 2.2.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="KivEnt 2.2.0 documentation" href="index.html"/>
+        <link rel="next" title="Managers" href="managers.html"/>
+        <link rel="prev" title="Entity" href="entity.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> KivEnt
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="gameworld.html">GameWorld</a></li>
+<li class="toctree-l1"><a class="reference internal" href="entity.html">Entity</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Game Systems</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-kivent_core.systems.gamesystem">Python GameSystems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-kivent_core.systems.staticmemgamesystem">Cython GameSystems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aggregators">Aggregators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#position-systems">Position Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rotate-systems">Rotate Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scale-systems">Scale Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#color-systems">Color Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rendering-systems">Rendering Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#local-coordinate-system">Local coordinate system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#controlling-the-viewing-area">Controlling the Viewing Area</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="managers.html">Managers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="physics.html">The Cymunk Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="particles.html">Particles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rendering.html">Rendering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_handlers.html">Memory Handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tiled.html">The Maps Module</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">KivEnt</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Game Systems</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/gamesystems.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="game-systems">
+<h1>Game Systems<a class="headerlink" href="#game-systems" title="Permalink to this headline">¶</a></h1>
+<p><strong>Most of these Classes have cdefed functions that cannot be read by
+Sphinx. Read the source if you want to find out more about using them.</strong></p>
+<div class="section" id="module-kivent_core.systems.gamesystem">
+<span id="python-gamesystems"></span><h2>Python GameSystems<a class="headerlink" href="#module-kivent_core.systems.gamesystem" title="Permalink to this headline">¶</a></h2>
+<p>This is the base for creating a GameSystem usable from python. It will
+store the components in a python list and allow dynamic control of your
+components data as it is just a python object. These type of GameSystem
+do not store their memory as contiguously as the more optimized game systems
+but are perfectly suitable for prototyping or game systems that simply do not
+do that much processing.</p>
+<dl class="class">
+<dt id="kivent_core.systems.gamesystem.GameSystem">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.gamesystem.</code><code class="descname">GameSystem</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gamesystem.GameSystem" title="Permalink to this definition">¶</a></dt>
+<dd><p>GameSystem is the part of your game that holds the logic to operate
+on the data of your Entity’s components. It will also manage assembling,
+cleaning up, storing, and destroying the components holding system data.
+The basic GameSystem keeps track of <strong>Component</strong>, which is a
+regular Python object supporting all the dynamic nature of python but
+without many static optimizations.
+The basic setup is that we will create a Component object and release them
+for garbage collection when the entity is done. We will avoid resizing the
+components list by reusing space in the list (a component will be cleared
+to None when removed and an internal free list will provide these spaces
+before growing the list).</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>system_id</strong> (StringProperty): Name of this gamesystem, used to name
+entity component attribute, and refer to system.</p>
+<p><strong>system_index</strong> (NumericProperty): The integer index of the GameSystem
+in the SystemManager array. Corresponds to where in the entity array
+you will find this system’s component_index.</p>
+<p><strong>updateable</strong> (BooleanProperty): Boolean to let gameworld know
+whether or not to run an update tick on this gamesystem. Defaults to
+False</p>
+<p><strong>paused</strong> (BooleanProperty): Boolean used to determine whether or not
+this system should be updated on the current tick,
+if updateable is True</p>
+<p><strong>gameworld</strong> (ObjectProperty): Reference to the gameworld object,
+usually bound in kv</p>
+<p><strong>gameview</strong> (StringProperty): Name of the GameView this system will
+be rendered too. If set to None the system will instead be rendered
+to GameWorld’s canvas. The default value is None</p>
+<p><strong>update_time</strong> (NumericProperty): The ‘tick’ rate of this system’s
+update. Defaults to 1./60. or 60 FPS</p>
+<p><strong>components</strong> (list): a list of the components currently active.
+If the list contains None at an index that component has been recently
+released for GC and a free list is being maintained internally. Skip
+these values during processing.</p>
+<p><strong>frame_time</strong> (float): Leftover time from the last update, not consumed
+yet.</p>
+<p><strong>do_allocation</strong> (BooleanProperty): Determines whether GameWorld
+should run the <strong>allocate</strong> function of the GameSystem during GameWorld
+allocation.</p>
+<p><strong>do_components</strong> (BooleanProperty): Indicates whether the GameSystem
+will actually have components and thus have a slot reserved for storing
+the component in the EntityManager array.</p>
+<p class="last"><strong>zones</strong> (ListProperty): Determines which zones will be present in the
+GameSystem’s memory allocation. Unused in the default GameSystem
+implementation.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="kivent_core.systems.gamesystem.GameSystem.allocate">
+<code class="descname">allocate</code><span class="sig-paren">(</span><em>self</em>, <em>Buffer master_buffer</em>, <em>dict reserve_spec</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gamesystem.GameSystem.allocate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override this function if your GameSystem desires to make static
+allocation of some data to be kept for the lifetime of the GameSystem.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">master_buffer (Buffer): The buffer that this system will allocate
+itself from.</p>
+<p class="last">reserve_spec (dict): A key value pairing of zone name (str)
+to be allocated and desired counts for number of entities in that
+zone.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gamesystem.GameSystem.clear_component">
+<code class="descname">clear_component</code><span class="sig-paren">(</span><em>self</em>, <em>component_index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gamesystem.GameSystem.clear_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override this function if we must cleanup the component in some way
+before destroying or reusing it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gamesystem.GameSystem.copy_component">
+<code class="descname">copy_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int entity_id</em>, <em>unsigned int component_index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gamesystem.GameSystem.copy_component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gamesystem.GameSystem.create_component">
+<code class="descname">create_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int entity_id</em>, <em>str zone</em>, <em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gamesystem.GameSystem.create_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Typically called by GameWorld automatically as part of creating an
+<strong>Entity</strong>. If you would like to dynamically add a component you should
+call directly.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">entity_id (unsigned int) : The identity of the <strong>Entity</strong> to assign
+this component to.</p>
+<p>zone (str) : Not used in the basic GameSystem but used by
+other systems which use the <strong>IndexedMemoryZone</strong>.</p>
+<p class="last">args (dict) : dictionary of the arguments for component
+initialization</p>
+</dd>
+<dt>Return:</dt>
+<dd>component_index (unsigned int) : The identity (location) of the new
+<strong>component</strong>.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gamesystem.GameSystem.get_component">
+<code class="descname">get_component</code><span class="sig-paren">(</span><em>self</em>, <em>zone</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gamesystem.GameSystem.get_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used internally to determine whether to add a new
+spot onto our list or use one of the existing free slots. Typically
+you will not need to call or work with it directly unless you
+are designing a custom memory management for your components.</p>
+<dl class="docutils">
+<dt>Return:</dt>
+<dd>component_id (unsigned int): The index of the newly generated
+component.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gamesystem.GameSystem.init_component">
+<code class="descname">init_component</code><span class="sig-paren">(</span><em>self</em>, <em>component_index</em>, <em>entity_id</em>, <em>zone</em>, <em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gamesystem.GameSystem.init_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override this function to provide custom logic for setting up your
+component, by default each key, val pair of args will be setattr on
+the component.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gamesystem.GameSystem.on_add_system">
+<code class="descname">on_add_system</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gamesystem.GameSystem.on_add_system" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function called when a system is added during a gameworld state
+change</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gamesystem.GameSystem.on_delete_system">
+<code class="descname">on_delete_system</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gamesystem.GameSystem.on_delete_system" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function called when a system is deleted by gameworld</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gamesystem.GameSystem.on_gameview">
+<code class="descname">on_gameview</code><span class="sig-paren">(</span><em>self</em>, <em>instance</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gamesystem.GameSystem.on_gameview" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event that handles the adding of this widget to the appropriate parent
+if gameview is set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gamesystem.GameSystem.on_remove_system">
+<code class="descname">on_remove_system</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gamesystem.GameSystem.on_remove_system" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function called when a system is removed during a gameworld state
+change</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gamesystem.GameSystem.remove_component">
+<code class="descname">remove_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gamesystem.GameSystem.remove_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Typically this will be called automatically by GameWorld. If you want to
+remove a component without destroying the entity call this function
+directly.
+If you want to override the behavior of component cleanup override
+<strong>clear_component</strong> instead. Only override this function if you
+are working directly with the storage of components for your system.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>component_index (unsigned int): the component_id to be removed.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gamesystem.GameSystem.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>self</em>, <em>dt</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gamesystem.GameSystem.update" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>dt (float): time argument passed in by Clock. Should be
+equivalent to update_time.</dd>
+</dl>
+<p>Override this function to create your gamesystems update logic
+typically looks like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">gameworld</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gameworld</span>
+<span class="n">entities</span> <span class="o">=</span> <span class="n">gameworld</span><span class="o">.</span><span class="n">entities</span>
+<span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+    <span class="c1">#make sure to skip released components.</span>
+    <span class="k">if</span> <span class="n">component</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="c1">#If we need other components from the entity let us</span>
+        <span class="c1">#retrieve it like this:</span>
+        <span class="n">entity_id</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">entity_id</span>
+        <span class="n">entity</span> <span class="o">=</span> <span class="n">entities</span><span class="p">[</span><span class="n">entity_id</span><span class="p">]</span>
+        <span class="c1">#Do your system logic per entity here</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_core.systems.gamesystem.Component">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.gamesystem.</code><code class="descname">Component</code><a class="headerlink" href="#kivent_core.systems.gamesystem.Component" title="Permalink to this definition">¶</a></dt>
+<dd><p>A component will keep track of the data for your GameSystems logic.
+It keeps track of its own identity (index in the components list), and
+the entity_id of its entity. If the entity_id returned is &lt;unsigned int&gt;-1
+the component is not currently attached to an entity</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><strong>_id</strong> (unsigned int): The identity of this component</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-kivent_core.systems.staticmemgamesystem">
+<span id="cython-gamesystems"></span><h2>Cython GameSystems<a class="headerlink" href="#module-kivent_core.systems.staticmemgamesystem" title="Permalink to this headline">¶</a></h2>
+<p><strong>StaticMemGameSystem</strong> and <strong>MemComponent</strong> are the basis for all built in
+GameSystems. They are cythonic classes that store their data in raw C
+arrays allocated using the custom memory management designed for pooling and
+contiguous processing found in the <strong>memory_handlers</strong> modules.</p>
+<dl class="class">
+<dt id="kivent_core.systems.staticmemgamesystem.StaticMemGameSystem">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.staticmemgamesystem.</code><code class="descname">StaticMemGameSystem</code><a class="headerlink" href="#kivent_core.systems.staticmemgamesystem.StaticMemGameSystem" title="Permalink to this definition">¶</a></dt>
+<dd><p>The StaticMemGameSystem keeps a statically allocated array of C structs as
+its components. The allocation is split out into several different ‘zones’.
+This is done to help you ensure all entities of a certain type are processed
+roughly in order. The StaticMemGameSystem’s components will also be pooled.
+All components will be created once and reused as often as possible.
+It will not be possibleto create more components in a zone than specified
+by the zone configuration.
+This class should not be used directly but instead inherited from to
+create your own GameSystem that makes use of the static, memory pooling
+features. This class should never be inherited from in Python as you will
+need Cython/C level access to various attributes and the components.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>size_of_component_block</strong> (int): Internally the memory will be broken
+down into blocks of <strong>size_of_component_block</strong> kibibytes. Defaults to
+4.</p>
+<p><strong>type_size</strong> (int): Number of bytes for the type. Typically you will
+set this with sizeof(YourCStruct).</p>
+<p><strong>component_type</strong> (MemComponent): The object that will make your C
+structcomponent’s data accessible from python. Should inherit from
+MemComponent.</p>
+<p><strong>processor</strong> (BooleanProperty): If set to True, the system will
+allocate a helper object <strong>ZonedAggregator</strong> to make it easier to batch
+process all the system’s components in your <strong>update</strong> function.
+Defaults to False.</p>
+<p><strong>system_names</strong> (ListProperty): Names of the other component systems
+to be bound by the <strong>ZonedAggregator</strong>, this should be a list of other
+StaticMemGameSystem <strong>system_id</strong> that you will need the component data
+from during your <strong>update</strong> function</p>
+<p><strong>do_allocation</strong> (BooleanProperty): Defaults to True for
+StaticMemGameSystem as we expect an allocation phase.</p>
+<p class="last"><strong>components</strong> (IndexedMemoryZone): Instead of the simple python list,
+components are stored in the more complex IndexedMemoryZone which
+supports both direct C access to the underlying struct arrays and
+python level access to the <strong>component_type</strong> objects that wrap the
+C data.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="kivent_core.systems.staticmemgamesystem.StaticMemGameSystem.allocate">
+<code class="descname">allocate</code><span class="sig-paren">(</span><em>self</em>, <em>Buffer master_buffer</em>, <em>dict reserve_spec</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.staticmemgamesystem.StaticMemGameSystem.allocate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allocates an IndexedMemoryZone from the buffer provided following
+the zone_name, count pairings in reserve_spec. The IndexedMemoryZone
+will be stored internally on the C extension <strong>imz_components</strong>
+attribute, it is accessible in python through the <strong>components</strong>
+property. If <strong>processor</strong> is True a ZonedAggregator will also be
+allocated. This stores void pointers to the various components of the
+entity based on the system_names provides in <strong>system_names</strong>. This
+makes it easier to retrieve various component data for processing.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">master_buffer (Buffer): The buffer that this syscdtem will allocate
+itself from.</p>
+<p class="last">reserve_spec (dict): A key value pairing of zone name (str)
+to be allocated and desired counts for number of entities in that
+zone.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.staticmemgamesystem.StaticMemGameSystem.clear_component">
+<code class="descname">clear_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.staticmemgamesystem.StaticMemGameSystem.clear_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Not implemented for StaticMemGameSystem, override when subclassing.
+Use this function to setup the clearing of a component’s values for
+recycling</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.staticmemgamesystem.StaticMemGameSystem.clear_entities">
+<code class="descname">clear_entities</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.staticmemgamesystem.StaticMemGameSystem.clear_entities" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.staticmemgamesystem.StaticMemGameSystem.get_component">
+<code class="descname">get_component</code><span class="sig-paren">(</span><em>self</em>, <em>str zone</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.staticmemgamesystem.StaticMemGameSystem.get_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overrides GameSystem’s default get_component, using
+IndexedMemoryZone to handle component data instead. <strong>clear_component</strong>
+will be called prior to returning the new index of the component
+ensuring no junk data is present.</p>
+<dl class="docutils">
+<dt>Return:</dt>
+<dd>unsigned int: The index of the newly generated component.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.staticmemgamesystem.StaticMemGameSystem.get_size_estimate">
+<code class="descname">get_size_estimate</code><span class="sig-paren">(</span><em>self</em>, <em>dict reserve_spec</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.staticmemgamesystem.StaticMemGameSystem.get_size_estimate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an estimated size, safe to call before calling <strong>allocate</strong>.
+Used internally by GameWorld to estimate if enough memory is available
+to support the GameSystem</p>
+<dl class="docutils">
+<dt>Return:</dt>
+<dd>int: estimated size in bytes of the system’s allocations.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.staticmemgamesystem.StaticMemGameSystem.get_system_size">
+<code class="descname">get_system_size</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.staticmemgamesystem.StaticMemGameSystem.get_system_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the actual size being taken up by system data. Does not
+include python objects, just the various underlying arrays holding
+raw component data, and other memories allocated by this GameSystem.
+Must be called after <strong>allocate</strong>.</p>
+<dl class="docutils">
+<dt>Return:</dt>
+<dd>int: size in bytes of the system’s allocations.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.staticmemgamesystem.StaticMemGameSystem.init_component">
+<code class="descname">init_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em>, <em>unsigned int entity_id</em>, <em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.staticmemgamesystem.StaticMemGameSystem.init_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Not implemented for StaticMemGameSystem, override when subclassing.
+Use this function to setup the initialization of a component’s values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.staticmemgamesystem.StaticMemGameSystem.remove_component">
+<code class="descname">remove_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.staticmemgamesystem.StaticMemGameSystem.remove_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overrides the default behavior of GameSystem, passing data handling
+duties to the IndexedMemoryZone. <strong>clear_component</strong> will be called
+prior to calling <strong>free_slot</strong> on the MemoryZone.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_core.systems.staticmemgamesystem.MemComponent">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.staticmemgamesystem.</code><code class="descname">MemComponent</code><a class="headerlink" href="#kivent_core.systems.staticmemgamesystem.MemComponent" title="Permalink to this definition">¶</a></dt>
+<dd><p>The base for a cdef extension that will work with the MemoryBlock
+memory management system. The data do not live inside the MemComponent,
+it just provide a python accessible interface for working with the raw
+C structs holding the data. Will store a pointer to the actual data,
+and the index of the slot. All of the Python accessible C optimized
+components (and the Entity class) inherit from this class.</p>
+<dl class="docutils">
+<dt><strong>Attributes: (Cython Access Only)</strong></dt>
+<dd><p class="first"><strong>pointer</strong> (void*): Pointer to the location in the provided
+memory_block that this component’s data resides in.</p>
+<p class="last"><strong>_id</strong> (unsigned int): Index of this component in the overall
+component memory. Will usually be locate in MemoryBlock + offset of
+MemoryBlock in the MemoryPool.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="aggregators">
+<h2>Aggregators<a class="headerlink" href="#aggregators" title="Permalink to this headline">¶</a></h2>
+<p>The Aggregator classes make it easier to write the logic for a GameSystem’s
+update loop. Rather than having to fetch the components yourself from each
+GameSystem MemoryBlock, you can instead expend a little more memory and
+store an array of pointers to the appropriate components for your processing.</p>
+<p>This expends a little more memory, and adds a layer of indirection but
+makes it significantly easier to write the update loop in cython.</p>
+<dl class="class">
+<dt id="kivent_core.systems.staticmemgamesystem.ZonedAggregator">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.staticmemgamesystem.</code><code class="descname">ZonedAggregator</code><a class="headerlink" href="#kivent_core.systems.staticmemgamesystem.ZonedAggregator" title="Permalink to this definition">¶</a></dt>
+<dd><p>ZonedAggregator provides a shortcut for processing data from several
+components. A single contiguous array of void pointers is allocated,
+respecting the zoning of memory for the IndexedMemoryZone.
+It is not accessible from Python, this class is meant to be used only from
+Cython and allow you to deal directly with pointers to memory. Unintended
+uses could result in dangling pointers. You will be responsible for
+correctly casting the result while executing the system logic.
+If you remove a component from your entity that is being tracked by the
+Aggregator, you must remove and readd the entity to the Aggregator or it
+will have a bad reference.</p>
+<dl class="docutils">
+<dt><strong>Attributes (Cython Access Only):</strong></dt>
+<dd><p class="first"><strong>count</strong> (unsigned int): The number of systems being tracked by this
+aggregator.</p>
+<p><strong>total</strong> (unsigned int): The number of entitys data can be collected
+from summing all zones. The actual number of pointers being tracked is
+total * count</p>
+<p><strong>entity_block_index</strong> (dict): Stores the actual location of the entity
+in the Aggregator as keyed by the entity_id.</p>
+<p><strong>system_names</strong> (list): The systems that components will be retrieved
+from per entity.</p>
+<p><strong>memory_block</strong> (ZonedBlock): The actual container of the pointer data.
+Access via memory_block.data</p>
+<p class="last"><strong>gameworld</strong> (object): Reference to the GameWorld for access to
+entities and system_manager.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_core.systems.staticmemgamesystem.ComponentPointerAggregator">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.staticmemgamesystem.</code><code class="descname">ComponentPointerAggregator</code><a class="headerlink" href="#kivent_core.systems.staticmemgamesystem.ComponentPointerAggregator" title="Permalink to this definition">¶</a></dt>
+<dd><p>ComponentPointerAggregator provides a shortcut for processing data from
+several components. A single contiguous array of void pointers is allocated.
+It is not accessible from Python, this class is meant to be used only from
+Cython and allow you to deal directly with pointers to memory. Unintended
+uses could result in dangling pointers. You will be responsible for
+correctly casting the result while executing the system logic. If you
+remove a component from your entity that is being tracked by the Aggregator,
+you must remove and readd the entity to the Aggregator or it will have a
+bad reference.</p>
+<dl class="docutils">
+<dt><strong>Attributes (Cython Access Only):</strong></dt>
+<dd><p class="first"><strong>count</strong> (unsigned int): The number of systems being tracked by this
+aggregator.</p>
+<p><strong>total</strong> (unsigned int): The number of entitys data can be collected
+from summing all zones. The actual number of pointers being tracked is
+total * count</p>
+<p><strong>entity_block_index</strong> (dict): Stores the actual location of the entity
+in the Aggregator as keyed by the entity_id.</p>
+<p><strong>system_names</strong> (list): The systems that components will be retrieved
+from per entity.</p>
+<p><strong>memory_block</strong> (MemoryBlock): The actual container of the pointer
+data. Access via memory_block.data</p>
+<p class="last"><strong>gameworld</strong> (object): Reference to the GameWorld for access to
+entities and system_manager.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="position-systems">
+<h2>Position Systems<a class="headerlink" href="#position-systems" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.systems.position_systems.PositionComponent2D">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.position_systems.</code><code class="descname">PositionComponent2D</code><a class="headerlink" href="#kivent_core.systems.position_systems.PositionComponent2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>The component associated with PositionSystem2D.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>entity_id</strong> (unsigned int): The entity_id this component is currently
+associated with. Will be &lt;unsigned int&gt;-1 if the component is
+unattached.</p>
+<p><strong>x</strong> (float): The x position of the center of the entity.</p>
+<p><strong>y</strong> (float): The y position of the center of the entity.</p>
+<p class="last"><strong>pos</strong> (tuple): A tuple of the (x, y) position.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_core.systems.position_systems.PositionSystem2D">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.position_systems.</code><code class="descname">PositionSystem2D</code><a class="headerlink" href="#kivent_core.systems.position_systems.PositionSystem2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>PositionSystem2D abstracts 2 dimensional position data out into its own
+system so that all other GameSystem can interact with the position of an
+Entity without having to know specifically about dependent systems such as
+the CymunkPhysics system or any other method of determining the actual
+position. This GameSystem does no processing of its own, just holding data.</p>
+<dl class="method">
+<dt id="kivent_core.systems.position_systems.PositionSystem2D.clear_component">
+<code class="descname">clear_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.position_systems.PositionSystem2D.clear_component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.position_systems.PositionSystem2D.init_component">
+<code class="descname">init_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em>, <em>unsigned int entity_id</em>, <em>str zone</em>, <em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.position_systems.PositionSystem2D.init_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>A PositionComponent2D is initialized with an args tuple of (x, y).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="rotate-systems">
+<h2>Rotate Systems<a class="headerlink" href="#rotate-systems" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.systems.rotate_systems.RotateComponent2D">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.rotate_systems.</code><code class="descname">RotateComponent2D</code><a class="headerlink" href="#kivent_core.systems.rotate_systems.RotateComponent2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>The component associated with RotateSystem2D.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>entity_id</strong> (unsigned int): The entity_id this component is currently
+associated with. Will be &lt;unsigned int&gt;-1 if the component is
+unattached.</p>
+<p class="last"><strong>r</strong> (float): The rotation around center of the entity.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_core.systems.rotate_systems.RotateSystem2D">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.rotate_systems.</code><code class="descname">RotateSystem2D</code><a class="headerlink" href="#kivent_core.systems.rotate_systems.RotateSystem2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>RotateSystem2D abstracts 2 dimensional rotation data out into its own
+system so that all other GameSystem can interact with the rotation of an
+Entity without having to know specifically about dependent systems such as
+the CymunkPhysics system or any other method of determining the actual
+rotation. This GameSystem does no processing of its own, just holding data.</p>
+<p>Typically other GameSystems will interpret this rotation as being a
+rotation around the center of the entity.</p>
+<dl class="method">
+<dt id="kivent_core.systems.rotate_systems.RotateSystem2D.clear_component">
+<code class="descname">clear_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.rotate_systems.RotateSystem2D.clear_component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.rotate_systems.RotateSystem2D.init_component">
+<code class="descname">init_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em>, <em>unsigned int entity_id</em>, <em>str zone</em>, <em>float r</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.rotate_systems.RotateSystem2D.init_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>A RotateComponent2D is always initialized with a single float
+representing a rotation in degrees.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="scale-systems">
+<h2>Scale Systems<a class="headerlink" href="#scale-systems" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.systems.scale_systems.ScaleComponent2D">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.scale_systems.</code><code class="descname">ScaleComponent2D</code><a class="headerlink" href="#kivent_core.systems.scale_systems.ScaleComponent2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>The component associated with ScaleSystem2D.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>entity_id</strong> (unsigned int): The entity_id this component is currently
+associated with. Will be &lt;unsigned int&gt;-1 if the component is
+unattached.</p>
+<p><strong>s</strong> (float): The arithmetic average of the x scale and y scale, when
+set the x scale and y scale will be set to the value provided. Useful
+if you want uniform scaling in both axes.</p>
+<p><strong>sx</strong> (float): The x axis scaling of the entity.</p>
+<p class="last"><strong>sy</strong> (float): The y axis scaling of the entity.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_core.systems.scale_systems.ScaleSystem2D">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.scale_systems.</code><code class="descname">ScaleSystem2D</code><a class="headerlink" href="#kivent_core.systems.scale_systems.ScaleSystem2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>ScaleSystem2D abstracts 2 dimensional scale data out into its own
+system so that all other GameSystem can interact with the scale factor of
+an Entity without having to know specifically about dependent systems
+actually controlling the scale. This GameSystem does no processing of its
+own, just holding data.</p>
+<dl class="method">
+<dt id="kivent_core.systems.scale_systems.ScaleSystem2D.clear_component">
+<code class="descname">clear_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.scale_systems.ScaleSystem2D.clear_component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.scale_systems.ScaleSystem2D.init_component">
+<code class="descname">init_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em>, <em>unsigned int entity_id</em>, <em>str zone</em>, <em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.scale_systems.ScaleSystem2D.init_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>A ScaleComponent2D can be initialized with either a separate
+scaling factor for x axis and y axis or a single scaling factor for
+both. If args is a tuple sx will be args[0] and sy will be args[1],
+otherwise sx = sy = args.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="color-systems">
+<h2>Color Systems<a class="headerlink" href="#color-systems" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.systems.color_systems.ColorComponent">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.color_systems.</code><code class="descname">ColorComponent</code><a class="headerlink" href="#kivent_core.systems.color_systems.ColorComponent" title="Permalink to this definition">¶</a></dt>
+<dd><p>The component associated with ColorSystem.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>entity_id</strong> (unsigned int): The entity_id this component is currently
+associated with. Will be &lt;unsigned int&gt;-1 if the component is
+unattached.</p>
+<p><strong>r</strong> (unsigned char): The red channel, 0 to 255.</p>
+<p><strong>g</strong> (unsigned char): The green channel, 0 to 255.</p>
+<p><strong>b</strong> (unsigned char): The blue channel, 0 to 255.</p>
+<p><strong>a</strong> (unsigned char): The alpha channel, 0 to 255.</p>
+<p><strong>rgba</strong> (tuple): 4-tuple of unsigned ints (r,g,b,a)</p>
+<p class="last"><strong>rgb</strong> (tuple): 3-tuple of unsigned ints (r,g,b)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_core.systems.color_systems.ColorSystem">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.color_systems.</code><code class="descname">ColorSystem</code><a class="headerlink" href="#kivent_core.systems.color_systems.ColorSystem" title="Permalink to this definition">¶</a></dt>
+<dd><p>ColorSystem abstracts color data out into its own system so that all
+other GameSystem can interact with the color of an Entity without having to
+know about whatever system is controlling the actual color the entity. It
+is suitable for controlling a color that is applied over the whole model
+of an entity tinting its texture or coloring every vertex.</p>
+<p>This GameSystem does no processing of its own, just holding data.</p>
+<dl class="method">
+<dt id="kivent_core.systems.color_systems.ColorSystem.clear_component">
+<code class="descname">clear_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.color_systems.ColorSystem.clear_component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.color_systems.ColorSystem.init_component">
+<code class="descname">init_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em>, <em>unsigned int entity_id</em>, <em>str zone</em>, <em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.color_systems.ColorSystem.init_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>A color component is always initialized with a tuple (r, g, b, a).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="rendering-systems">
+<h2>Rendering Systems<a class="headerlink" href="#rendering-systems" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.systems.renderers.RenderComponent">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.renderers.</code><code class="descname">RenderComponent</code><a class="headerlink" href="#kivent_core.systems.renderers.RenderComponent" title="Permalink to this definition">¶</a></dt>
+<dd><p>The component associated with various renderers including: Renderer 
+and RotateRenderer. Designed for 2d sprites, but potentially useful for 
+other types of models as well. If not using for sprites, ignore <strong>width</strong>,
+<strong>height</strong>, and <strong>texture_key</strong> properties as they are designed for
+convenience when working with textured quads. Prefer instead to modify the
+properties of the <strong>vert_mesh</strong> directly.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>entity_id</strong> (unsigned int): The entity_id this component is currently
+associated with. Will be &lt;unsigned int&gt;-1 if the component is
+unattached.</p>
+<p><strong>width</strong> (float): The width of the sprite.</p>
+<p><strong>height</strong> (float): The height of the sprite.</p>
+<p><strong>batch_id</strong> (unsigned int): The batch the entity is assigned to. Read
+Only. If the entity is not currently batched will be &lt;unsigned int&gt;-1.</p>
+<p><strong>attribute_count</strong> (unsigned int): The number of attributes in the
+vertex format for the model.</p>
+<p><strong>texture_key</strong> (str): The name of the texture for this component. If
+there is no texture None will be returned.</p>
+<p><strong>render</strong> (bool): Whether or not this entity should actually be
+rendered.</p>
+<p><strong>vertex_count</strong> (unsigned int): The number of vertices in the current
+model (the <strong>vert_mesh</strong>). You should not modify the number of vertices
+while an entity is batched.</p>
+<p><strong>index_count</strong> (unsigned int): The number of indices in the current
+model (the <strong>vert_mesh</strong>). You should not modify the number of indices
+while an entity is batched.</p>
+<p class="last"><strong>vert_mesh</strong> (VertMesh): The actual VertMesh object containing the
+model information for this component.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_core.systems.renderers.Renderer">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.renderers.</code><code class="descname">Renderer</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.renderers.Renderer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processing Depends On: PositionSystem2D, Renderer</p>
+<p>The basic KivEnt renderer draws with the VertexFormat4F:</p>
+<div class="highlight-cython"><div class="highlight"><pre><span></span><span class="k">ctypedef</span> <span class="k">struct</span> <span class="nc">VertexFormat4F</span><span class="p">:</span>
+    <span class="n">GLfloat</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span> <span class="n">pos</span>
+    <span class="n">GLfloat</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span> <span class="n">uvs</span>
+</pre></div>
+</div>
+<p>Entities will be batched into groups of up to <strong>maximum_vertices</strong>, if
+they can share the source of texture. This GameSystem is only
+dependent on its own component and the PositionComponent2D.</p>
+<p>If you want a static renderer, set <strong>frame_count</strong> to 1 and <strong>updateable</strong>
+to false.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>shader_source</strong> (StringProperty): Path to the .glsl to be used, do
+include ‘.glsl’ in the name. You must ensure that your shader matches
+your vertex format or you will have problems.</p>
+<p><strong>maximum_vertices</strong> (NumericProperty): The maximum number of vertices
+that will be placed in a batch.</p>
+<p><strong>attribute_count</strong> (NumericProperty): The number of attributes each
+vertex will contain. Computed automatically inside
+calculate_vertex_format.</p>
+<p><strong>vertex_format</strong> (dict): describes format of data sent to shaders,
+generated automatically based on do_rotate, do_scale, do_color</p>
+<p><strong>blend_factor_source</strong> (NumericProperty): Sets the Blend Source. for
+a visual exploration of this concept visit :
+<a class="reference external" href="http://www.andersriggelsen.dk/glblendfunc.php">http://www.andersriggelsen.dk/glblendfunc.php</a>
+Options Include:
+GL_SRC_ALPHA, GL_ONE, GL_ZERO, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR,
+GL_ONE_MINUS_SRC_ALPHA, GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA,
+GL_DST_COLOR, GL_ONE_MINUS_DST_COLOR</p>
+<p><strong>blend_factor_dest</strong> (NumericProperty): Sets the Blend Dest.
+See blend_factor_sourc for more details.</p>
+<p><strong>reset_blend_factor_source</strong> (NumericProperty): The blend source
+will be reset to this after drawing this canvas.
+See blend_factor_source for more details.</p>
+<p><strong>reset_blend_factor_dest</strong> (NumericProperty): The blend dest
+will be reset to this after drawing this canvas.
+See blend_factor_source for more details.</p>
+<p><strong>smallest_vertex_count</strong> (NumericProperty, should be int): Used to
+estimate the number of entities that can fit in each batch at max,
+batch ComponentPointerAggregator will then be <strong>size_of_batches</strong> //
+<strong>smallest_vertex_count</strong> * <strong>vertex_format_size</strong>.</p>
+<p><strong>max_batches</strong> (NumericProperty, should be int): The maximum number
+of space to reserve for this renderer. Will be <strong>max_batches</strong> *
+<strong>frame_count</strong> * <strong>size_of_batches</strong>.</p>
+<p><strong>size_of_batches</strong> (NumericProperty): Size in kibibytes of each batch.</p>
+<p><strong>vertex_format_size</strong> (NumericProperty): The size in bytes of the
+vertex_format to be used. Will typically be the result of calling
+sizeof on the struct being used.</p>
+<p><strong>frame_count</strong> (NumericProperty, should be int): The number of frames
+to multibuffer.</p>
+<p><strong>force_update</strong> (BooleanProperty): Set force_update if you want to be
+sure an Entity is drawn immediately upon being added instead of waiting
+for the next update tick. Useful if you want to have a static renderer,
+or if you are adding and removing an Entity every frame.</p>
+<p><strong>static_rendering</strong> (BooleanProperty): Set static_rendering to True,
+if you do not want to redraw every Entity every frame. Usually used
+in combination with force_update = True.</p>
+<p class="last"><strong>update_trigger</strong> (function): Invoke update_trigger if you want to
+force the renderer to redraw a frame. force_update = True will call
+update_trigger automatically on batching and unbatching of an Entity.</p>
+</dd>
+<dt><strong>Attributes: (Cython Access Only)</strong></dt>
+<dd><p class="first"><strong>attribute_count</strong> (unsigned int): The number of attributes in the
+VertMesh format for this renderer. Defaults to 4 (x, y, u, v).</p>
+<p class="last"><strong>batch_manager</strong> (BatchManager): The BatchManager that is responsible
+for actually submitting vertex data to the GPU.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="kivent_core.systems.renderers.Renderer.allocate">
+<code class="descname">allocate</code><span class="sig-paren">(</span><em>self</em>, <em>Buffer master_buffer</em>, <em>dict reserve_spec</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.renderers.Renderer.allocate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.renderers.Renderer.batch_entity">
+<code class="descname">batch_entity</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int entity_id</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.renderers.Renderer.batch_entity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Python accessible function for batching the entity, the real work
+is done in the cdefed _batch_entity.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>entity_id (unsigned int): The id of the entity to unbatch.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.renderers.Renderer.clear_component">
+<code class="descname">clear_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.renderers.Renderer.clear_component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.renderers.Renderer.get_size_estimate">
+<code class="descname">get_size_estimate</code><span class="sig-paren">(</span><em>self</em>, <em>dict reserve_spec</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.renderers.Renderer.get_size_estimate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.renderers.Renderer.get_system_size">
+<code class="descname">get_system_size</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.renderers.Renderer.get_system_size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.renderers.Renderer.init_component">
+<code class="descname">init_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em>, <em>unsigned int entity_id</em>, <em>str zone_name</em>, <em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.renderers.Renderer.init_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>A RenderComponent is initialized with an args dict with many
+optional values.</p>
+<p>Optional Args:</p>
+<blockquote>
+<div><p>texture (str): If ‘texture’ is in args, the appropriate texture
+will be loaded from managers.resource_managers.texture_manager.
+#change to model_key
+vert_mesh_key (str): If ‘vert_mesh_key’ is in args, the associated
+model from managers.resource_managers.model_manager will be loaded.
+Otherwise, it will be assumed we are rendering a sprite and the
+appropriate model for that sprite will either be generated or
+loaded from the model_manager if it already exists. If this occurs
+the models name will be str(<strong>attribute_count</strong>) + texture_key.</p>
+<p>size (tuple): If size is provided and there is no ‘vert_mesh_key’
+and the sprite has not been loaded before the size of the newly
+generated sprite VertMesh will be set to (width, height).</p>
+<p>render (bool): If ‘render’ is in args, the components render
+attribute will be set to the provided, otherwise it defaults to
+True.</p>
+</div></blockquote>
+<p>Keep in mind that all RenderComponent will share the same VertMesh if
+they have the same vert_mesh_key or load the same sprite.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.renderers.Renderer.on_shader_source">
+<code class="descname">on_shader_source</code><span class="sig-paren">(</span><em>self</em>, <em>instance</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.renderers.Renderer.on_shader_source" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event that sets the canvas.shader.source property when the
+<strong>shader_source</strong> property is set</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.renderers.Renderer.remove_component">
+<code class="descname">remove_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.renderers.Renderer.remove_component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.renderers.Renderer.unbatch_entity">
+<code class="descname">unbatch_entity</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int entity_id</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.renderers.Renderer.unbatch_entity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Python accessible function for unbatching the entity, the real work
+is done in the cdefed _unbatch_entity.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>entity_id (unsigned int): The id of the entity to unbatch.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.renderers.Renderer.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>self</em>, <em>force_update</em>, <em>dt</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.renderers.Renderer.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update function where all drawing of entities is performed.
+Override this method if you would like to create a renderer with
+customized behavior. The basic logic is that we iterate through
+each batch getting the entities in that batch, then iterate through
+the vertices in the RenderComponent.vert_mesh, copying every
+vertex into the batches data and combining it with data from other
+components.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>dt (float): The time elapsed since last update, not usually
+used in rendering but passed in to maintain a consistent API.</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_core.systems.renderers.RotateRenderer">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.renderers.</code><code class="descname">RotateRenderer</code><a class="headerlink" href="#kivent_core.systems.renderers.RotateRenderer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processing Depends On: PositionSystem2D, RotateSystem2D, RotateRenderer</p>
+<p>The renderer draws with the VertexFormat7F:</p>
+<div class="highlight-cython"><div class="highlight"><pre><span></span><span class="k">ctypedef</span> <span class="k">struct</span> <span class="nc">VertexFormat7F</span><span class="p">:</span>
+    <span class="n">GLfloat</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span> <span class="n">pos</span>
+    <span class="n">GLfloat</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span> <span class="n">uvs</span>
+    <span class="n">GLfloat</span> <span class="n">rot</span>
+    <span class="n">GLfloat</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span> <span class="n">center</span>
+</pre></div>
+</div>
+<p>This renderer draws every entity with rotation data suitable
+for use with entities using the CymunkPhysics GameSystems.</p>
+<dl class="method">
+<dt id="kivent_core.systems.renderers.RotateRenderer.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>self</em>, <em>force_update</em>, <em>dt</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.renderers.RotateRenderer.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_core.systems.renderers.ColorRenderer">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.renderers.</code><code class="descname">ColorRenderer</code><a class="headerlink" href="#kivent_core.systems.renderers.ColorRenderer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processing Depends On: PositionSystem2D, ColorSystem, ColorRenderer</p>
+<p>The renderer draws with the VertexFormat8F:</p>
+<div class="highlight-cython"><div class="highlight"><pre><span></span><span class="k">ctypedef</span> <span class="k">struct</span> <span class="nc">VertexFormat8F</span><span class="p">:</span>
+    <span class="n">GLfloat</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span> <span class="n">pos</span>
+    <span class="n">GLfloat</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span> <span class="n">uvs</span>
+    <span class="n">GLubyte</span><span class="p">[</span><span class="mf">4</span><span class="p">]</span> <span class="n">v_color</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="kivent_core.systems.renderers.ColorRenderer.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>self</em>, <em>force_update</em>, <em>dt</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.renderers.ColorRenderer.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_core.systems.renderers.RotateColorRenderer">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.renderers.</code><code class="descname">RotateColorRenderer</code><a class="headerlink" href="#kivent_core.systems.renderers.RotateColorRenderer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processing Depends On: PositionSystem2D, RotateSystem2D,
+ColorSystem, RotateColorRenderer</p>
+<p>The renderer draws with the VertexFormat7F4UB:</p>
+<div class="highlight-cython"><div class="highlight"><pre><span></span><span class="k">ctypedef</span> <span class="k">struct</span> <span class="nc">VertexFormat7F</span><span class="p">:</span>
+    <span class="n">GLfloat</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span> <span class="n">pos</span>
+    <span class="n">GLfloat</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span> <span class="n">uvs</span>
+    <span class="n">GLfloat</span> <span class="n">rot</span>
+    <span class="n">GLfloat</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span> <span class="n">center</span>
+    <span class="n">GLubyte</span><span class="p">[</span><span class="mf">4</span><span class="p">]</span> <span class="n">v_color</span>
+</pre></div>
+</div>
+<p>This renderer draws every entity with rotation data suitable
+for use with entities using the CymunkPhysics GameSystems.</p>
+<dl class="method">
+<dt id="kivent_core.systems.renderers.RotateColorRenderer.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>self</em>, <em>force_update</em>, <em>dt</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.renderers.RotateColorRenderer.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_core.systems.renderers.PolyRenderer">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.renderers.</code><code class="descname">PolyRenderer</code><a class="headerlink" href="#kivent_core.systems.renderers.PolyRenderer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processing Depends On: PositionSystem2D, PolyRenderer</p>
+<p>The renderer draws with the VertexFormat2F4UB:</p>
+<div class="highlight-cython"><div class="highlight"><pre><span></span><span class="k">ctypedef</span> <span class="k">struct</span> <span class="nc">VertexFormat2F4UB</span><span class="p">:</span>
+    <span class="n">GLfloat</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span> <span class="n">pos</span>
+    <span class="n">GLubyte</span><span class="p">[</span><span class="mf">4</span><span class="p">]</span> <span class="n">v_color</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="kivent_core.systems.renderers.PolyRenderer.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>self</em>, <em>force_update</em>, <em>dt</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.renderers.PolyRenderer.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_core.systems.renderers.ColorPolyRenderer">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.renderers.</code><code class="descname">ColorPolyRenderer</code><a class="headerlink" href="#kivent_core.systems.renderers.ColorPolyRenderer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processing Depends On: PositionSystem2D, ColorSystem, ColorPolyRenderer</p>
+<p>The renderer draws with the VertexFormat2F4UB:</p>
+<div class="highlight-cython"><div class="highlight"><pre><span></span><span class="k">ctypedef</span> <span class="k">struct</span> <span class="nc">VertexFormat2F4UB</span><span class="p">:</span>
+    <span class="n">GLfloat</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span> <span class="n">pos</span>
+    <span class="n">GLubyte</span><span class="p">[</span><span class="mf">4</span><span class="p">]</span> <span class="n">v_color</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="kivent_core.systems.renderers.ColorPolyRenderer.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>self</em>, <em>force_update</em>, <em>dt</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.renderers.ColorPolyRenderer.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_core.systems.renderers.ScaledPolyRenderer">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.renderers.</code><code class="descname">ScaledPolyRenderer</code><a class="headerlink" href="#kivent_core.systems.renderers.ScaledPolyRenderer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processing Depends On: PositionSystem2D, PolyRenderer</p>
+<p>The renderer draws with the VertexFormat2F4UB:</p>
+<div class="highlight-cython"><div class="highlight"><pre><span></span><span class="k">ctypedef</span> <span class="k">struct</span> <span class="nc">VertexFormat2F4UB</span><span class="p">:</span>
+    <span class="n">GLfloat</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span> <span class="n">pos</span>
+    <span class="n">GLubyte</span><span class="p">[</span><span class="mf">4</span><span class="p">]</span> <span class="n">v_color</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="kivent_core.systems.renderers.ScaledPolyRenderer.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>self</em>, <em>force_update</em>, <em>dt</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.renderers.ScaledPolyRenderer.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="local-coordinate-system">
+<h2>Local coordinate system<a class="headerlink" href="#local-coordinate-system" title="Permalink to this headline">¶</a></h2>
+<p>You can use local coordinates by using the <strong>LocalPositionSystem2D</strong> or
+<strong>LocalPositionRotateSystem2D</strong>.
+Both systems will implement a parent/children relationsship tree
+and will update the children position (and rotation in case of the
+<strong>LocalPositionRotateSystem2D</strong> system) according to their parents
+and its own local systems.
+All entities using this systems need to own the local and global components
+required.</p>
+<dl class="class">
+<dt id="kivent_attachment.attachment_system.RelationComponent">
+<em class="property">class </em><code class="descclassname">kivent_attachment.attachment_system.</code><code class="descname">RelationComponent</code><a class="headerlink" href="#kivent_attachment.attachment_system.RelationComponent" title="Permalink to this definition">¶</a></dt>
+<dd><p>The RelationComponent holds a list of all entities attached to the
+entity holding this component.</p>
+<p>Its main use is to iterate over RelationTrees.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>entity_id</strong> (unsigned int): The entity_id this component is currently
+associated with. Will be &lt;unsigned int&gt;-1 if the component is
+unattached.</p>
+<p><strong>parent</strong> (unsigned int): The id of the parent or -1
+if this element doesn’t have a parent.</p>
+<p><strong>children</strong> (list): A list of all entity_ids of the child entities.</p>
+<p><strong>is_root</strong> (bool): True if this component has a parent.</p>
+<p class="last"><strong>descendants</strong> (list): A list of all descendants entity_ids.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_attachment.attachment_system.RelationTreeSystem">
+<em class="property">class </em><code class="descclassname">kivent_attachment.attachment_system.</code><code class="descname">RelationTreeSystem</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_attachment.attachment_system.RelationTreeSystem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#kivent_core.systems.staticmemgamesystem.StaticMemGameSystem" title="kivent_core.systems.staticmemgamesystem.StaticMemGameSystem"><code class="xref py py-class docutils literal"><span class="pre">kivent_core.systems.staticmemgamesystem.StaticMemGameSystem</span></code></a></p>
+<p>Processing Depends only on itself.</p>
+<p>A flexible Relationship system which can be used by different GameSystems
+which need to attach entities to others in one way or another.
+Currently its main use is create local coordinate systems.</p>
+<p>When removing a parent component all childs are detached
+and changed to root nodes.
+If you want to remove a parent and its childs use the remove_subtree method.</p>
+<dl class="docutils">
+<dt><strong>Attributes: (Cython Access Only):</strong></dt>
+<dd><p class="first"><strong>root_nodes</strong> (unordered_set[RelationStruct*]): All sockets which
+aren’t itself children of other sockets.
+It is usefull if you want to iterate over the attachment tree from top
+to bottom (see the <strong>get_topdown_iterator</strong> function for an example).</p>
+<p class="last"><strong>_state</strong> (unsigned int): A simple (wrap around) counter which is
+increased after every change to the relationsship tree.
+Usefull to check if the tree has changed since the last update tick
+when the iteration order is cached.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="kivent_attachment.attachment_system.RelationTreeSystem.attach_child">
+<code class="descname">attach_child</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int parent_id</em>, <em>unsigned int child_id</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_attachment.attachment_system.RelationTreeSystem.attach_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register a child as attachment of a parent.        
+If the child entity is alreay attached to another parent
+it will be detached before.</p>
+<dl class="docutils">
+<dt><strong>Args:</strong></dt>
+<dd><p class="first"><strong>parent_id</strong> (unsigned int)</p>
+<p class="last"><strong>child_id</strong> (unsigned int)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_attachment.attachment_system.RelationTreeSystem.create_component">
+<code class="descname">create_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int entity_id</em>, <em>str zone</em>, <em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_attachment.attachment_system.RelationTreeSystem.create_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Typically called by GameWorld automatically as part of creating an
+<strong>Entity</strong>. If you would like to dynamically add a component you should
+call directly.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">entity_id (unsigned int) : The identity of the <strong>Entity</strong> to assign
+this component to.</p>
+<p>zone (str) : Not used in the basic GameSystem but used by
+other systems which use the <strong>IndexedMemoryZone</strong>.</p>
+<p class="last">args (dict) : dictionary of the arguments for component
+initialization</p>
+</dd>
+<dt>Return:</dt>
+<dd>component_index (unsigned int) : The identity (location) of the new
+<strong>component</strong>.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_attachment.attachment_system.RelationTreeSystem.detach_child">
+<code class="descname">detach_child</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int child_id</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_attachment.attachment_system.RelationTreeSystem.detach_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deregister an attachment.
+The child will become a a root entity.</p>
+<dl class="docutils">
+<dt><strong>Args:</strong></dt>
+<dd><strong>child_id</strong> (unsigned int)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_attachment.attachment_system.RelationTreeSystem.init_component">
+<code class="descname">init_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em>, <em>unsigned int entity_id</em>, <em>str zone</em>, <em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_attachment.attachment_system.RelationTreeSystem.init_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <strong>RelationComponent</strong> is initialized with an args dict containing
+a ‘parent’ key holding the parents entity_id.</p>
+<p>If there is no ‘parent’ key or the value is -1 the entity will become
+a root entity.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_attachment.attachment_system.RelationTreeSystem.remove_component">
+<code class="descname">remove_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_attachment.attachment_system.RelationTreeSystem.remove_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Typically this will be called automatically by GameWorld.
+If you want to remove a component without destroying the entity call this function directly.</p>
+<dl class="docutils">
+<dt><strong>Args:</strong></dt>
+<dd><strong>component_index</strong> (unsigned int): the component_id to be removed.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_attachment.attachment_system.RelationTreeSystem.remove_subtree">
+<code class="descname">remove_subtree</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int entity_id</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_attachment.attachment_system.RelationTreeSystem.remove_subtree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the given entity and all its descendants from the gameworld.</p>
+<dl class="docutils">
+<dt><strong>Args:</strong></dt>
+<dd><strong>entity_id</strong> (unsigned int)</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_attachment.attachment_system.LocalPositionSystem2D">
+<em class="property">class </em><code class="descclassname">kivent_attachment.attachment_system.</code><code class="descname">LocalPositionSystem2D</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_attachment.attachment_system.LocalPositionSystem2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#kivent_attachment.attachment_system.RelationTreeSystem" title="kivent_attachment.attachment_system.RelationTreeSystem"><code class="xref py py-class docutils literal"><span class="pre">kivent_attachment.attachment_system.RelationTreeSystem</span></code></a></p>
+<p>Processing Depends On: LocalPositionSystem2D, PositionSystem2D</p>
+<p>The <strong>LocalPositionSystem2D</strong> allows to attach entities to other entities to 
+construct local coordinate systems.
+Local coordinates (offset) are available.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>system_names</strong> (list): Shall contain the system id of the <strong>PositionSystem2D</strong>
+which will be used to store the <strong>global</strong> position.</p>
+<p><strong>local_systems</strong> (list): Shall contain the system id of the <strong>PositionSystem2D</strong>
+which will be used for the <strong>local</strong> position.</p>
+<p class="last"><strong>parent_systems</strong> (list): Shall contain the system id of the <strong>PositionSystem2D</strong>
+which will be used for the <strong>parents</strong> position.
+In most cases this will be the same value as used for the global system.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Root nodes also need to own the local position component     even if they aren’t used.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This system can be used to implement other local systems in cython.     Extend it, select the required components in the <strong>system_names</strong>, <strong>local_systems</strong>     and <strong>parent_systems</strong> properties and overewite the <strong>update</strong> method.     For more information see <strong>LocalPositionRotateSystem2D</strong> source code.</p>
+</div>
+<dl class="method">
+<dt id="kivent_attachment.attachment_system.LocalPositionSystem2D.attach_child">
+<code class="descname">attach_child</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int parent_id</em>, <em>unsigned int child_id</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_attachment.attachment_system.LocalPositionSystem2D.attach_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register a child as attachment of a parent.        
+If the child entity is alreay attached to another parent
+it will be detached before.</p>
+<dl class="docutils">
+<dt><strong>Args:</strong></dt>
+<dd><p class="first"><strong>parent_id</strong> (unsigned int)</p>
+<p class="last"><strong>child_id</strong> (unsigned int)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_attachment.attachment_system.LocalPositionSystem2D.create_component">
+<code class="descname">create_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int entity_id</em>, <em>str zone</em>, <em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_attachment.attachment_system.LocalPositionSystem2D.create_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Typically called by GameWorld automatically as part of creating an
+<strong>Entity</strong>. If you would like to dynamically add a component you should
+call directly.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">entity_id (unsigned int) : The identity of the <strong>Entity</strong> to assign
+this component to.</p>
+<p>zone (str) : Not used in the basic GameSystem but used by
+other systems which use the <strong>IndexedMemoryZone</strong>.</p>
+<p class="last">args (dict) : dictionary of the arguments for component
+initialization</p>
+</dd>
+<dt>Return:</dt>
+<dd>component_index (unsigned int) : The identity (location) of the new
+<strong>component</strong>.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_attachment.attachment_system.LocalPositionSystem2D.detach_child">
+<code class="descname">detach_child</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int child_id</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_attachment.attachment_system.LocalPositionSystem2D.detach_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deregister an attachment.
+The child will become a a root entity.</p>
+<dl class="docutils">
+<dt><strong>Args:</strong></dt>
+<dd><strong>child_id</strong> (unsigned int)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_attachment.attachment_system.LocalPositionSystem2D.init_component">
+<code class="descname">init_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em>, <em>unsigned int entity_id</em>, <em>str zone</em>, <em>dict args</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_attachment.attachment_system.LocalPositionSystem2D.init_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <strong>RelationComponent</strong> is initialized with an args dict containing
+a ‘parent’ key holding the parents entity_id.</p>
+<p>If there is no ‘parent’ key or the value is -1 the entity will become
+a root entity.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_attachment.attachment_system.LocalPositionSystem2D.remove_component">
+<code class="descname">remove_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_attachment.attachment_system.LocalPositionSystem2D.remove_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Typically this will be called automatically by GameWorld.
+If you want to remove a component without destroying the entity
+call this function directly.</p>
+<p>If you want to override the behavior of component cleanup override
+clear_component instead.
+Only override this function if you are working directly with the
+storage of components for your system.</p>
+<dl class="docutils">
+<dt><strong>Args:</strong></dt>
+<dd><strong>component_index</strong> (unsigned int): the component_id to be removed.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_attachment.attachment_system.LocalPositionSystem2D.remove_subtree">
+<code class="descname">remove_subtree</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int entity_id</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_attachment.attachment_system.LocalPositionSystem2D.remove_subtree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the given entity and all its descendants from the gameworld.</p>
+<dl class="docutils">
+<dt><strong>Args:</strong></dt>
+<dd><strong>entity_id</strong> (unsigned int)</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_attachment.attachment_system.LocalPositionRotateSystem2D">
+<em class="property">class </em><code class="descclassname">kivent_attachment.attachment_system.</code><code class="descname">LocalPositionRotateSystem2D</code><a class="headerlink" href="#kivent_attachment.attachment_system.LocalPositionRotateSystem2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#kivent_attachment.attachment_system.LocalPositionSystem2D" title="kivent_attachment.attachment_system.LocalPositionSystem2D"><code class="xref py py-class docutils literal"><span class="pre">kivent_attachment.attachment_system.LocalPositionSystem2D</span></code></a></p>
+<p>Processing Depends On: LocalPositionRotateSystem2D, PositionSystem2D,
+RotateSystem2D</p>
+<p>The <strong>LocalPositionRotateSystem2D</strong> allows to attach entities to other entities to 
+construct local coordinate systems.
+Local coordinates and local rotation are available.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>system_names</strong> (list): Shall contain the system id of the <strong>PositionSystem2D</strong>
+and <strong>RotateSystem2D</strong> which will be used to store the <strong>global</strong> position
+and rotation.</p>
+<p><strong>local_systems</strong> (list): Shall contain the system id of the <strong>PositionSystem2D</strong>
+and <strong>RotateSystem2D</strong> which will be used for the <strong>local</strong> position and rotation.</p>
+<p class="last"><strong>parent_systems</strong> (list): Shall contain the system id of the <strong>PositionSystem2D</strong>
+and <strong>RotateSystem2D</strong> which will be used for the <strong>parents</strong> position and rotation.
+In most cases this will be the same values as used for the global system.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Root nodes also need to own the local position and local rotation component     even if they aren’t used.</p>
+</div>
+<dl class="method">
+<dt id="kivent_attachment.attachment_system.LocalPositionRotateSystem2D.attach_child">
+<code class="descname">attach_child</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int parent_id</em>, <em>unsigned int child_id</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_attachment.attachment_system.LocalPositionRotateSystem2D.attach_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register a child as attachment of a parent.        
+If the child entity is alreay attached to another parent
+it will be detached before.</p>
+<dl class="docutils">
+<dt><strong>Args:</strong></dt>
+<dd><p class="first"><strong>parent_id</strong> (unsigned int)</p>
+<p class="last"><strong>child_id</strong> (unsigned int)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_attachment.attachment_system.LocalPositionRotateSystem2D.create_component">
+<code class="descname">create_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int entity_id</em>, <em>str zone</em>, <em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_attachment.attachment_system.LocalPositionRotateSystem2D.create_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Typically called by GameWorld automatically as part of creating an
+<strong>Entity</strong>. If you would like to dynamically add a component you should
+call directly.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">entity_id (unsigned int) : The identity of the <strong>Entity</strong> to assign
+this component to.</p>
+<p>zone (str) : Not used in the basic GameSystem but used by
+other systems which use the <strong>IndexedMemoryZone</strong>.</p>
+<p class="last">args (dict) : dictionary of the arguments for component
+initialization</p>
+</dd>
+<dt>Return:</dt>
+<dd>component_index (unsigned int) : The identity (location) of the new
+<strong>component</strong>.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_attachment.attachment_system.LocalPositionRotateSystem2D.detach_child">
+<code class="descname">detach_child</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int child_id</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_attachment.attachment_system.LocalPositionRotateSystem2D.detach_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deregister an attachment.
+The child will become a a root entity.</p>
+<dl class="docutils">
+<dt><strong>Args:</strong></dt>
+<dd><strong>child_id</strong> (unsigned int)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_attachment.attachment_system.LocalPositionRotateSystem2D.init_component">
+<code class="descname">init_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em>, <em>unsigned int entity_id</em>, <em>str zone</em>, <em>dict args</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_attachment.attachment_system.LocalPositionRotateSystem2D.init_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <strong>RelationComponent</strong> is initialized with an args dict containing
+a ‘parent’ key holding the parents entity_id.</p>
+<p>If there is no ‘parent’ key or the value is -1 the entity will become
+a root entity.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_attachment.attachment_system.LocalPositionRotateSystem2D.remove_component">
+<code class="descname">remove_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_attachment.attachment_system.LocalPositionRotateSystem2D.remove_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Typically this will be called automatically by GameWorld.
+If you want to remove a component without destroying the entity
+call this function directly.</p>
+<p>If you want to override the behavior of component cleanup override
+clear_component instead.
+Only override this function if you are working directly with the
+storage of components for your system.</p>
+<dl class="docutils">
+<dt><strong>Args:</strong></dt>
+<dd><strong>component_index</strong> (unsigned int): the component_id to be removed.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_attachment.attachment_system.LocalPositionRotateSystem2D.remove_subtree">
+<code class="descname">remove_subtree</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int entity_id</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_attachment.attachment_system.LocalPositionRotateSystem2D.remove_subtree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the given entity and all its descendants from the gameworld.</p>
+<dl class="docutils">
+<dt><strong>Args:</strong></dt>
+<dd><strong>entity_id</strong> (unsigned int)</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="controlling-the-viewing-area">
+<h2>Controlling the Viewing Area<a class="headerlink" href="#controlling-the-viewing-area" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.systems.gameview.GameView">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.gameview.</code><code class="descname">GameView</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gameview.GameView" title="Permalink to this definition">¶</a></dt>
+<dd><p>GameView provides a simple camera system that will control the rendering
+view of any other <strong>GameSystem</strong> that has had the <strong>gameview</strong> property set
+<strong>GameSystem</strong> that have a <strong>gameview</strong> will be added to the GameView
+canvas instead of the GameWorld canvas.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>do_scroll_lock</strong> (BooleanProperty): If True the scrolling will be
+locked to the bounds of the GameWorld’s currentmap.</p>
+<p><strong>camera_pos</strong> (ListProperty): Current position of the camera</p>
+<p><strong>camera_scale</strong> (NumericProperty): Current scale of the camera. The
+scale is equal to the amount of the game world that will be shown
+compared to the physical size of the GameView, therefore 2x will show
+twice as much of your gameworld, appearing ‘zoomed out’, while .5 will
+show half as much of the gameworld, appearing ‘zoomed in’.</p>
+<p><strong>camera_rotate</strong> (NumericProperty): Current angle in radians by which the
+camera is rotated clockwise with respect to the world x-axis.
+Every time this value is updated, the rotation takes place about the
+center of the screen.</p>
+<p><strong>focus_entity</strong> (BooleanProperty): If True the camera will follow the
+entity set in entity_to_focus</p>
+<p><strong>do_scroll</strong> (BooleanProperty): If True touches will scroll the camera</p>
+<p><strong>entity_to_focus</strong> (NumericProperty): Entity entity_id for the camera
+to focus on if focus_entity is True.</p>
+<p><strong>camera_speed_multiplier</strong> (NumericProperty): Time it will take camera
+to reach focused entity, Speed will be 1.0/camera_speed_multiplier
+seconds to close the distance</p>
+<p><strong>render_system_order</strong> (ListProperty): List of <strong>system_id</strong> in the
+desired order of rendering last to first. <strong>GameSystem</strong> with
+<strong>system_id</strong> not in <strong>render_system_order</strong> will be inserted at
+position 0.</p>
+<p><strong>move_speed_multiplier</strong> (NumericProperty): Multiplier to further
+control the speed of touch dragging of camera. Example Usage:
+Bind to the size of your gameview divided by the size of the window
+to ensure that apparent dragging speed stays consistent.</p>
+<p><strong>do_touch_zoom</strong> (BooleanProperty): If True the camera will zoom with
+2 finger touch interaction.</p>
+<p><strong>scale_min</strong> (NumericProperty): The minimum scale factor that will be
+allowed when touch zoom is being used. This will be the most ‘zoomed
+in’ your camera will be allowed to go. This limit do not apply
+when manually manipulated <strong>camera_scale</strong>.</p>
+<p class="last"><strong>scale_max</strong> (NumericProperty): The maximum scale factor that will be
+allowed when touch zoom is being used. This will be the most ‘zoomed
+out’ your camera will be allowed to go. This limit do not apply
+when manually manipulated <strong>camera_scale</strong>.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="kivent_core.systems.gameview.GameView.add_widget">
+<code class="descname">add_widget</code><span class="sig-paren">(</span><em>self</em>, <em>widget</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gameview.GameView.add_widget" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gameview.GameView.collide_point">
+<code class="descname">collide_point</code><span class="sig-paren">(</span><em>self</em>, <em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gameview.GameView.collide_point" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gameview.GameView.convert_from_screen_to_world">
+<code class="descname">convert_from_screen_to_world</code><span class="sig-paren">(</span><em>self</em>, <em>pos</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gameview.GameView.convert_from_screen_to_world" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts the coordinates of pos from screen space to camera space</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gameview.GameView.convert_to_rotated_space">
+<code class="descname">convert_to_rotated_space</code><span class="sig-paren">(</span><em>self</em>, <em>point</em>, <em>invert=False</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gameview.GameView.convert_to_rotated_space" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a point from normal to rotated space and back using
+the invert parameter</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gameview.GameView.get_camera_center">
+<code class="descname">get_camera_center</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gameview.GameView.get_camera_center" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current center point of the cameras view</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gameview.GameView.get_camera_centered">
+<code class="descname">get_camera_centered</code><span class="sig-paren">(</span><em>self</em>, <em>map_size</em>, <em>camera_size</em>, <em>camera_scale</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gameview.GameView.get_camera_centered" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gameview.GameView.lock_scroll">
+<code class="descname">lock_scroll</code><span class="sig-paren">(</span><em>self</em>, <em>float distance_x</em>, <em>float distance_y</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gameview.GameView.lock_scroll" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gameview.GameView.look_at">
+<code class="descname">look_at</code><span class="sig-paren">(</span><em>self</em>, <em>pos</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gameview.GameView.look_at" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the camera to be focused at pos.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gameview.GameView.on_entity_to_focus">
+<code class="descname">on_entity_to_focus</code><span class="sig-paren">(</span><em>self</em>, <em>instance</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gameview.GameView.on_entity_to_focus" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gameview.GameView.on_size">
+<code class="descname">on_size</code><span class="sig-paren">(</span><em>self</em>, <em>instance</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gameview.GameView.on_size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gameview.GameView.on_touch_down">
+<code class="descname">on_touch_down</code><span class="sig-paren">(</span><em>self</em>, <em>touch</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gameview.GameView.on_touch_down" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gameview.GameView.on_touch_move">
+<code class="descname">on_touch_move</code><span class="sig-paren">(</span><em>self</em>, <em>touch</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gameview.GameView.on_touch_move" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gameview.GameView.on_touch_up">
+<code class="descname">on_touch_up</code><span class="sig-paren">(</span><em>self</em>, <em>touch</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gameview.GameView.on_touch_up" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gameview.GameView.remove_widget">
+<code class="descname">remove_widget</code><span class="sig-paren">(</span><em>self</em>, <em>widget</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gameview.GameView.remove_widget" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gameview.GameView.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>self</em>, <em>dt</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gameview.GameView.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.systems.gameview.GameView.update_render_state">
+<code class="descname">update_render_state</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.systems.gameview.GameView.update_render_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used internally by gameview to update the projection matrix to properly
+reflect the settings for camera_size, camera_pos, and the pos and size
+of gameview.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_core.systems.gamemap.GameMap">
+<em class="property">class </em><code class="descclassname">kivent_core.systems.gamemap.</code><code class="descname">GameMap</code><a class="headerlink" href="#kivent_core.systems.gamemap.GameMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>GameMap is a basic implementation of a map size for your GameWorld that
+limits the scrolling of GameView typically a GameMap does not actually
+have any entities, it simply holds some data and logic for use by
+other GameSystems</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>map_size</strong> (ListProperty): Sets the size of this map, used to
+determine scrolling bounds. If the map size is smaller than the
+window it will be centered inside the window.</p>
+<p><strong>margins</strong> (ListProperty): The amount of scrolling beyond the size of
+the map in x, y directions to be allowed. If the map is smaller than
+the window. This value is calculated automatically.</p>
+<p class="last"><strong>default_margins</strong> (ListProperty): The amount of margin if the map is
+larger than the window, defaults to (0, 0) which means no scrolling
+beyond edge of GameMap.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="managers.html" class="btn btn-neutral float-right" title="Managers" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="entity.html" class="btn btn-neutral" title="Entity" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2017, Jacob Kovac.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

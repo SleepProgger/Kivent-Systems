@@ -1,0 +1,664 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Memory Handlers &mdash; KivEnt 2.2.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="KivEnt 2.2.0 documentation" href="index.html"/>
+        <link rel="next" title="The Maps Module" href="tiled.html"/>
+        <link rel="prev" title="Rendering" href="rendering.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> KivEnt
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="gameworld.html">GameWorld</a></li>
+<li class="toctree-l1"><a class="reference internal" href="entity.html">Entity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gamesystems.html">Game Systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="managers.html">Managers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="physics.html">The Cymunk Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="particles.html">Particles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rendering.html">Rendering</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Memory Handlers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#buffer">Buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#memoryblock">MemoryBlock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#memorypool">MemoryPool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#memoryzone">MemoryZone</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#blockzone">BlockZone</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#zonedblock">ZonedBlock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#blockindex">BlockIndex</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#poolindex">PoolIndex</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#zoneindex">ZoneIndex</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#indexedmemoryzone">IndexedMemoryZone</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#memrange">memrange</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tiled.html">The Maps Module</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">KivEnt</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Memory Handlers</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/memory_handlers.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="memory-handlers">
+<h1>Memory Handlers<a class="headerlink" href="#memory-handlers" title="Permalink to this headline">¶</a></h1>
+<p><strong>Most of these Classes have cdefed functions that cannot be read by
+Sphinx. Read the source if you want to find out more about using them.</strong></p>
+<span class="target" id="module-kivent_core.memory_handlers.indexing"></span><p>The builtin GameSystems all use the IndexedMemoryZone to manage their memory
+using an arena allocation strategy to hold system data contiguously in simple
+C arrays. In addition, all memory will be pooled and reused instead of
+released. This will minimize the amount of allocation occuring during your
+game loop: decreasing the cost of component creation.</p>
+<p>The zoning strategy will allow you to group entities that have similary
+promising habits (entities that use the same systems) into contiguous memory.
+If you ensure that each zone encompasses a specific type of entity aka every
+entity in a zone has the exact same components, everything will be initialized
+in such a way as to allow for processing of groups of components to be
+contiguous as well. If this is not strictly followed everything will still
+work but processing may be slightly slower as jumping around in memory may
+occur.</p>
+<p>Example:</p>
+<p>We have 10 memory units in zone ‘general’:</p>
+<p>We have 2 entity types,</p>
+<p>entity type 1: components: position, rotate, physics, renderer
+entity type 2: components: position, renderer2</p>
+<p>Since entity 1 and entity 2 share position components but not renderer
+components. Position memory will be interleaved between the 2 groups while
+render will not.</p>
+<p>We initialize 1 entity 1 then 5 entity 2 and then 4 more entity 1.
+Memory will look like. Each [] is a component in the GameSystem for
+[Entity number (type)].</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="85%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">System Name</th>
+<th class="head">Component Memory</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>position</td>
+<td>[0(1)][1(2)][2(2)][3(2)][4(2)][5(2)][6(1)][7(1)][8(1)][9(1)]</td>
+</tr>
+<tr class="row-odd"><td>rotate</td>
+<td>[0(1)][6(1)][7(1)][8(1)][9(1)][….][….][….][….][….]</td>
+</tr>
+<tr class="row-even"><td>physics</td>
+<td>[0(1)][6(1)][7(1)][8(1)][9(1)][….][….][….][….][….]</td>
+</tr>
+<tr class="row-odd"><td>renderer</td>
+<td>[0(1)][6(1)][7(1)][8(1)][9(1)][….][….][….][….][….]</td>
+</tr>
+<tr class="row-even"><td>renderer2</td>
+<td>[1(2)][2(2)][3(2)][4(2)][5(2)][….][….][….][….][….]</td>
+</tr>
+</tbody>
+</table>
+<p>While processing renderer will have to go to memory position 0, and then
+jump to memory position 6 to continue through 9. If we continue interleaving
+types of entities in this scheme we will have to make many jumps and then go
+back and go through doing the same thing for renderer2.</p>
+<p>The solution is to split the memory into zones: contiguous sections of memory
+reserved for a specific type of component grouping, identified by a user chosen
+str.</p>
+<p>If instead we split into zones: ‘zone1’ 5 units of memory, ‘zone2’ 5 units of
+memory. We still use the same 10 memory units but our entities will look like:
+zone1 has components in position, rotate, physics, and renderer. zone2 has
+components in render2 and position. The share components will be split into
+zones. positions 0-4 in zone1 will be contained between 0-4 and positions 0-4
+in zone2 will be contained between 5-9 in memory.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="85%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">System Name</th>
+<th class="head">Component Memory</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>position</td>
+<td>[0(1)][1(1)][2(1)][3(1)][4(1)][5(2)][6(2)][7(2)][8(2)][9(2)]</td>
+</tr>
+<tr class="row-odd"><td>rotate</td>
+<td>[0(1)][1(1)][2(1)][3(1)][4(1)][….][….][….][….][….]</td>
+</tr>
+<tr class="row-even"><td>physics</td>
+<td>[0(1)][1(1)][2(1)][3(1)][4(1)][….][….][….][….][….]</td>
+</tr>
+<tr class="row-odd"><td>renderer</td>
+<td>[0(1)][1(1)][2(1)][3(1)][4(1)][….][….][….][….][….]</td>
+</tr>
+<tr class="row-even"><td>renderer2</td>
+<td>[5(2)][6(2)][7(2)][8(2)][9(2)][….][….][….][….][….]</td>
+</tr>
+</tbody>
+</table>
+<p>This way when renderer is processing it can run through all of its components
+in a row, and when renderer2 is processing it can do the same, just a little
+offset into the position component array.</p>
+<div class="section" id="buffer">
+<h2>Buffer<a class="headerlink" href="#buffer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.memory_handlers.membuffer.Buffer">
+<em class="property">class </em><code class="descclassname">kivent_core.memory_handlers.membuffer.</code><code class="descname">Buffer</code><a class="headerlink" href="#kivent_core.memory_handlers.membuffer.Buffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The KivEnt Buffer allocates a static amount of memory and manages it by
+keeping a list of free_blocks. This type of memory handling is suitable for
+the pooling of objects. The Buffer is the only object of this type that
+calls malloc or free directly. The MemoryBlock, MemoryPool, and MemoryZone
+are all designed to allocate themselves from a Buffer or another
+MemoryBlock. The Buffer does not change its size.</p>
+<p>The physical size of the buffer will be <strong>size_in_bytes</strong> and this will be
+split into <strong>size_in_bytes</strong> // <strong>type_size</strong> ‘blocks’.</p>
+<p>You must call <strong>allocate_memory</strong> on a Buffer in order to actually acquire
+the memory. In KivEnt, this will nearly always be done as part of the
+GameWorld.allocate.</p>
+<dl class="docutils">
+<dt><strong>Attributes: (Cython Access Only)</strong></dt>
+<dd><p class="first"><strong>size</strong> (unsigned int): The number of blocks (<strong>real_size</strong> /
+<strong>type_size</strong>) that will fit in the Buffer.</p>
+<p><strong>data</strong> (void*): Pointer to the beginning of the data array.</p>
+<p><strong>used_count</strong> (unsigned int): The number of blocks currently in use,
+use is either actively storing memory or in the free list waiting for
+reuse.</p>
+<p><strong>free_blocks</strong> (list): A list of previously used blocks or a
+contiguous collection of blocks, each entrant is a tuple of block_index,
+block_count.</p>
+<p><strong>free_block_count</strong> (unsigned int): The number of entrants in the
+<strong>free_blocks</strong> list, a single entrant could actually be comprised of
+multiple blocks, held contiguously.</p>
+<p><strong>data_in_free</strong> (unsigned int): The actual number of blocks held in
+the <strong>free_blocks</strong> list.</p>
+<p><strong>type_size</strong> (unsigned int): The size of a single block in bytes.</p>
+<p><strong>real_size</strong> (unsigned int): The size in bytes of the entire Buffer.</p>
+<p class="last"><strong>size_in_blocks</strong> (unsigned int): The number of blocks allocated from
+the parent buffer. Unused in the basic Buffer, but used by subclasses
+such as MemoryBlock.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="memoryblock">
+<h2>MemoryBlock<a class="headerlink" href="#memoryblock" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.memory_handlers.block.MemoryBlock">
+<em class="property">class </em><code class="descclassname">kivent_core.memory_handlers.block.</code><code class="descname">MemoryBlock</code><a class="headerlink" href="#kivent_core.memory_handlers.block.MemoryBlock" title="Permalink to this definition">¶</a></dt>
+<dd><p>The MemoryBlock is like the Buffer, except instead of allocating its
+memory using malloc, it gets it from either a Buffer or another MemoryBlock.
+It is suitable for nesting, for instance during rendering KivEnt will
+allocate one large MemoryBlock to represent the maximum number of frames to
+be rendered something like 20*512*1024 bytes:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1">#allocate the initial space</span>
+<span class="nb">buffer</span> <span class="o">=</span> <span class="n">Buffer</span><span class="p">(</span><span class="mi">100</span><span class="o">*</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nb">buffer</span><span class="o">.</span><span class="n">allocate_memory</span><span class="p">()</span>
+<span class="c1">#allocate our first MemoryBlock, in units of bytes</span>
+<span class="n">mem_block</span> <span class="o">=</span> <span class="n">MemoryBlock</span><span class="p">(</span><span class="mi">20</span><span class="o">*</span><span class="mi">512</span><span class="o">*</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">512</span><span class="o">*</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">mem_block</span><span class="o">.</span><span class="n">allocate_memory_with_buffer</span><span class="p">(</span><span class="nb">buffer</span><span class="p">)</span>
+<span class="c1">#allocate a block with the mem_block, units in 512 kib blocks</span>
+<span class="c1">#will allocate 1 block of mem_block.type_size and split it into</span>
+<span class="c1">#mem_block.type_size // other_type_size blocks.</span>
+<span class="n">mem_block2</span> <span class="o">=</span> <span class="n">MemoryBlock</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">other_type_size</span><span class="p">,</span> <span class="mi">512</span><span class="o">*</span><span class="mi">1024</span><span class="p">)</span>
+<span class="n">mem_block2</span><span class="o">.</span><span class="n">allocate_memory_with_buffer</span><span class="p">(</span><span class="n">mem_block</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You must allocate with the function <strong>allocate_memory_with_buffer</strong> instead
+of <strong>allocate_memory</strong>. Deallocation is handled with <strong>remove_from_buffer</strong>.</p>
+<dl class="docutils">
+<dt><strong>Attributes: (Cython Access Only)</strong></dt>
+<dd><p class="first"><strong>master_buffer</strong> (Buffer): The Buffer from which memory has been
+allocated. Defaults to None, will be set after
+<strong>allocate_memory_with_buffer</strong> has been called.</p>
+<p class="last"><strong>master_index</strong> (unsigned int): The location the data has been
+allocated at in the master_buffer. Defaults to 0, will be set after
+<strong>allocate_memory_with_buffer</strong> has been called.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="memorypool">
+<h2>MemoryPool<a class="headerlink" href="#memorypool" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.memory_handlers.pool.MemoryPool">
+<em class="property">class </em><code class="descclassname">kivent_core.memory_handlers.pool.</code><code class="descname">MemoryPool</code><a class="headerlink" href="#kivent_core.memory_handlers.pool.MemoryPool" title="Permalink to this definition">¶</a></dt>
+<dd><p>The MemoryPool is suitable for pooling C data of the same type.
+Memory for the objects will be allocated only once during initialization.
+A MemoryPool collects several MemoryBlock of the same size together to
+store more data than could be held in a single MemoryBlock. A position in
+these MemoryBlocks is referred to as a ‘slot’ and the index of this ‘slot’
+gives both which block it lives in index at index // <strong>slots_per_block</strong>,
+and the actual index of that MemoryBlock’s data at
+index % <strong>slots_per_block</strong>. The data will appear contiguosly from the
+outside, but most likely contain a small area of excess memory in between
+the end of one MemoryBlock and the beginning of the next. The blocks
+themselves will sit contigiously. The technical size of the gap is:</p>
+<blockquote>
+<div>MemoryBlock.real_size - MemoryBlock.count * MemoryBlock.type_size</div></blockquote>
+<p>The actual amount of slots allocated will be higher than the number the
+pool is initialized with to account for matching the desired size of each
+block.</p>
+<dl class="docutils">
+<dt><strong>Attributes: (Cython Access Only)</strong></dt>
+<dd><p class="first"><strong>count</strong> (unsigned int): The number of total slots in the pool.
+Equivalent to <strong>slots_per_block</strong> * <strong>block_count</strong>.</p>
+<p><strong>memory_blocks</strong> (list): A list of the MemoryBlock objects. Position
+in this list determines which indices a MemoryBlock holds:
+start = <strong>slots_per_block</strong> * index in memory_blocks
+end = (<strong>slots_per_block</strong> * (index in memory_blocks + 1)) - 1</p>
+<p><strong>blocks_with_free_space</strong> (list): A list of the MemoryBlock that have
+open slots.</p>
+<p><strong>used</strong> (unsigned int): Total number of used slots, will include both
+active slots and slots sitting in the free list of their respective
+MemoryBlock.</p>
+<p><strong>free_count</strong> (unsigned int): Total number of slots current in the
+free list.</p>
+<p><strong>master_buffer</strong> (Buffer): The Buffer passed in on initialization that
+we will allocate the <strong>master_block</strong> from.</p>
+<p><strong>type_size</strong> (unsigned int): The size in bytes of a single slot in the
+pool.</p>
+<p><strong>master_block</strong> (MemoryBlock): The large MemoryBlock from which we will
+allocate the individual blocks in the pool.</p>
+<p><strong>block_count</strong> (unsigned int): The number of MemoryBlock this pool will
+have. Will be calculated on initialization using the desired_count arg:
+(desired_count // slots_per_block) + 1.</p>
+<p class="last"><strong>slots_per_block</strong> (unsigned int): The number of slots of <strong>type_size</strong>
+that will fit in each MemoryBlock in the pool.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="memoryzone">
+<h2>MemoryZone<a class="headerlink" href="#memoryzone" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.memory_handlers.zone.MemoryZone">
+<em class="property">class </em><code class="descclassname">kivent_core.memory_handlers.zone.</code><code class="descname">MemoryZone</code><a class="headerlink" href="#kivent_core.memory_handlers.zone.MemoryZone" title="Permalink to this definition">¶</a></dt>
+<dd><p>The MemoryZone splits one type of data storage up into several zones
+that are layed out contiguously using multiple MemoryPool. This way we can
+ensure all objects with one processing pattern are stored together. Like
+MemoryPool data storage will appear contiguous, however internally there
+may be some space in between each zone’s MemoryPool.</p>
+<dl class="docutils">
+<dt><strong>Attributes: (Cython Access Only)</strong></dt>
+<dd><p class="first"><strong>block_size_in_kb</strong> (unsigned int): The size of each MemoryBlock that
+makes up the pools.</p>
+<p><strong>memory_pools</strong> (dict): dict storing the MemoryPool for each zone.
+key is the index of the MemoryPool (the order in which it was
+initialized).</p>
+<p><strong>reserved_ranges</strong> (list): list of tuples representing the start
+and ending indices of each individual MemoryPool.</p>
+<p><strong>count</strong> (unsigned int): The total number of slots available across
+all MemoryPool.</p>
+<p><strong>reserved_names</strong> (list): List storing the name of each pool, ordered
+by index of pool.</p>
+<p><strong>reserved_count</strong> (unsigned int): The total number of MemoryPool
+reserved.</p>
+<p class="last"><strong>master_buffer</strong> (Buffer):  The Buffer from which all MemoryPool will
+be allocated.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="blockzone">
+<h2>BlockZone<a class="headerlink" href="#blockzone" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.memory_handlers.zonedblock.BlockZone">
+<em class="property">class </em><code class="descclassname">kivent_core.memory_handlers.zonedblock.</code><code class="descname">BlockZone</code><a class="headerlink" href="#kivent_core.memory_handlers.zonedblock.BlockZone" title="Permalink to this definition">¶</a></dt>
+<dd><p>A BlockZone manages a specific subsection of the ZonedBlock for a single
+zone of the data. It will store data from index <strong>start</strong> to index <strong>start</strong>
++ <strong>total</strong>.</p>
+<dl class="docutils">
+<dt><strong>Attributes: (Cython Access Only)</strong></dt>
+<dd><p class="first"><strong>used_count</strong> (unsigned int): The number of memory blocks used up.</p>
+<p><strong>total</strong> (unsigned int): The total number of memory blocks found in
+this BlockZone.</p>
+<p><strong>start</strong> (unsigned int): The starting index of this zone in the overall
+ZonedBlock. The index in a specific BlockZone will be index in the
+ZonedBlock - this value.</p>
+<p><strong>data_in_free</strong> (unsigned int): The total number of blocks currently
+reclaimed and ready for reuse.</p>
+<p><strong>free_blocks</strong> (list): List managing the reclaimed blocks in the zone.
+Will be stored as tuples (block_index, block_count).</p>
+<p class="last"><strong>name</strong> (str): The name of the zone this BlockZone represents.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="zonedblock">
+<h2>ZonedBlock<a class="headerlink" href="#zonedblock" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.memory_handlers.zonedblock.ZonedBlock">
+<em class="property">class </em><code class="descclassname">kivent_core.memory_handlers.zonedblock.</code><code class="descname">ZonedBlock</code><a class="headerlink" href="#kivent_core.memory_handlers.zonedblock.ZonedBlock" title="Permalink to this definition">¶</a></dt>
+<dd><p>The ZonedBlock is like a MemoryBlock in that the data is stored
+contiguously. It is also somewhat like a MemoryZone in that the data is
+split into several regions each of which keep track of their own free list.
+This allows for a single contiguous block of memory that can be iterated
+through efficiently while still separating the memory appropriately to
+allow processing all data of a certain type at the same time. there will be
+no extra space unlike in MemoryZone and the counts for each zone will be
+exact.</p>
+<dl class="docutils">
+<dt><strong>Attributes: (Cython Access Only)</strong></dt>
+<dd><p class="first"><strong>zones</strong> (dict): Dict containing the BlockZones, keyed by the name of
+the zone.</p>
+<p><strong>master_buffer</strong> (Buffer): The Buffer from which this ZonedBlock will
+allocate its memory.</p>
+<p><strong>master_index</strong> (unsigned int): The location of the data in the
+<strong>master_buffer</strong></p>
+<p><strong>size</strong> (unsigned int): The size in bytes of the whole ZonedBlock
+allocation.</p>
+<p><strong>type_size</strong> (unsigned int): The size of each slot in the ZonedBlock
+in bytes.</p>
+<p><strong>count</strong> (unsigned int): The number of slots in the ZonedBlock, each
+slot will be <strong>type_size</strong> in bytes.</p>
+<p class="last"><strong>data</strong> (void*): Pointer to the actual data in memory.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="blockindex">
+<h2>BlockIndex<a class="headerlink" href="#blockindex" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.memory_handlers.indexing.BlockIndex">
+<em class="property">class </em><code class="descclassname">kivent_core.memory_handlers.indexing.</code><code class="descname">BlockIndex</code><a class="headerlink" href="#kivent_core.memory_handlers.indexing.BlockIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ties a single MemoryBlock to a set of block_count MemComponent objects,
+making the data held in MemoryBlock accessible from Python. See
+systems.staticmemgamesystem.MemComponent for a barebones implementation of
+such an object.</p>
+<p><strong>Attributes:</strong></p>
+<blockquote>
+<div><strong>blocks</strong> (list): List of the objects created to wrap the data in
+MemoryBlock, can be accessed from Cython as <strong>block_objects</strong>. Index
+in this list to get a MemComponent object wrapping the data held in
+MemoryBlock.</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="poolindex">
+<h2>PoolIndex<a class="headerlink" href="#poolindex" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.memory_handlers.indexing.PoolIndex">
+<em class="property">class </em><code class="descclassname">kivent_core.memory_handlers.indexing.</code><code class="descname">PoolIndex</code><a class="headerlink" href="#kivent_core.memory_handlers.indexing.PoolIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>The PoolIndex will generate a BlockIndex for every MemoryBlock in the
+MemoryPool, making the data in the entire MemoryPool accessible from Python.</p>
+<p><strong>Attributes:</strong></p>
+<blockquote>
+<div><strong>block_indices</strong> (list): A list of the BlockIndex for the pool.
+Accessible in Cython via <strong>_block_indices</strong>.</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="zoneindex">
+<h2>ZoneIndex<a class="headerlink" href="#zoneindex" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.memory_handlers.indexing.ZoneIndex">
+<em class="property">class </em><code class="descclassname">kivent_core.memory_handlers.indexing.</code><code class="descname">ZoneIndex</code><a class="headerlink" href="#kivent_core.memory_handlers.indexing.ZoneIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>The ZoneIndex will generate a PoolIndex for every MemoryPool in the
+MemoryZone, making the data in the entire MemoryZone accessible from
+Python.</p>
+<p><strong>Attributes:</strong></p>
+<blockquote>
+<div><strong>pool_indices</strong> (list): A list of the PoolIndex for the zone.
+Accessible in Cython via <strong>_pool_indices</strong>.</div></blockquote>
+<dl class="method">
+<dt id="kivent_core.memory_handlers.indexing.ZoneIndex.get_component_from_index">
+<code class="descname">get_component_from_index</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.memory_handlers.indexing.ZoneIndex.get_component_from_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Will retrieve a single object of the type ComponentToCreate the
+ZoneIndex was initialized with.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>index (unsigned int): The index of the component you wish to
+retrieve.</dd>
+<dt>Return:</dt>
+<dd>object: Returns a python accessible object wrapping the data found
+in the MemoryZone.</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="indexedmemoryzone">
+<h2>IndexedMemoryZone<a class="headerlink" href="#indexedmemoryzone" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.memory_handlers.indexing.IndexedMemoryZone">
+<em class="property">class </em><code class="descclassname">kivent_core.memory_handlers.indexing.</code><code class="descname">IndexedMemoryZone</code><a class="headerlink" href="#kivent_core.memory_handlers.indexing.IndexedMemoryZone" title="Permalink to this definition">¶</a></dt>
+<dd><p>An IndexedMemoryZone will create both a MemoryZone and a ZoneIndex
+allowing access to your data both from python (via normal list __getitem__
+syntax) and cython (via <strong>get_pointer</strong>). Python slicing syntax is also
+supported and a list of components will be returned if a slice object is
+provided to __getitem__.
+In Python:</p>
+<blockquote>
+<div><p>component_object = self[component_index]</p>
+<p>or</p>
+<p>component_objects = self[start_index:end_index:step]</p>
+</div></blockquote>
+<p>In Cython:</p>
+<blockquote>
+<div>cdef void* pointer = self.get_pointer(component_index)</div></blockquote>
+<p><strong>Attributes:</strong></p>
+<blockquote>
+<div><p><strong>memory_zone</strong> (MemoryZone): The actual MemoryZone holding the data
+to be indexed.</p>
+<p><strong>zone_index</strong> (ZoneIndex): The ZoneIndex for the memory_zone.</p>
+</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="memrange">
+<h2>memrange<a class="headerlink" href="#memrange" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.memory_handlers.utils.memrange">
+<em class="property">class </em><code class="descclassname">kivent_core.memory_handlers.utils.</code><code class="descname">memrange</code><span class="sig-paren">(</span><em>IndexedMemoryZone memory_index</em>, <em>start=0</em>, <em>end=None</em>, <em>zone=None</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.memory_handlers.utils.memrange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use memrange to iterate a IndexedMemoryZone object and return the active
+game entities’ python objects , an active memory object is one that
+currently does not have the first attribute of its struct set to
+&lt;unsigned int&gt;-1. Typically KivEnt store the entity_id for the component
+in this position. Memory objects that have never been allocated are
+skipped.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>memory_index (IndexedMemoryZone): The IndexedMemoryZone to iterate.</p>
+<p>start (int): The start of iteration. Defaults 0.</p>
+<p>end (int): The end of iteration. Defaults None. If no end is specified
+we will iterate all memory.</p>
+<p>zone (str): The zone to iterate. Defaults None. If no zone is
+specified we will iterate through all zones.</p>
+</div></blockquote>
+<p>You must reference an IndexedMemoryZone, by default we will iterate
+through all the memory. The area of memory iterated can be controlled
+with options <em>start</em> and <em>end</em>, or you can provide the name of one of
+the reserved zones to iterate that specific memory area.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="tiled.html" class="btn btn-neutral float-right" title="The Maps Module" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="rendering.html" class="btn btn-neutral" title="Rendering" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2017, Jacob Kovac.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

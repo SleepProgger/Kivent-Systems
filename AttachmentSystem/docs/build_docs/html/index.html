@@ -1,0 +1,283 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Welcome to KivEnt’s documentation! &mdash; KivEnt 2.2.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="KivEnt 2.2.0 documentation" href="#"/>
+        <link rel="next" title="GameWorld" href="gameworld.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="#" class="icon icon-home"> KivEnt
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="gameworld.html">GameWorld</a></li>
+<li class="toctree-l1"><a class="reference internal" href="entity.html">Entity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gamesystems.html">Game Systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="managers.html">Managers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="physics.html">The Cymunk Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="particles.html">Particles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rendering.html">Rendering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_handlers.html">Memory Handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tiled.html">The Maps Module</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="#">KivEnt</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="#">Docs</a> &raquo;</li>
+      
+    <li>Welcome to KivEnt’s documentation!</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="welcome-to-kivent-s-documentation">
+<h1>Welcome to KivEnt’s documentation!<a class="headerlink" href="#welcome-to-kivent-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p><strong>If you are just starting you may be interested in the</strong> <a class="reference external" href="https://github.com/Kovak/KivEnt/wiki/An-Introduction-to-KivEnt">tutorials</a>.</p>
+<p>KivEnt is a framework for building performant, dynamic real-time scenes in Kivy. While not as powerful as something like the Unreal engine or Unity3d, KivEnt is capable of creating games that handle several thousands to tens of thousands of entities, depending on what type of processing we are doing on them. You can easily have a hundreds thousand static sprites rendered in the background if they do not have any dynamic processing. At the same time, almost the entire API is accessible through Python, with a more performant cythonic API for those looking to get closer to the metal. Even without creating any cython gamesystems, you ought to be able to create games that feature up to several thousand game objects at once.</p>
+<p>The only dependency for the kivent_core module is <a class="reference external" href="http://kivy.org">Kivy</a> itself. Additional modules may have other requirements, such as kivent_cymunk module being based on <a class="reference external" href="https://chipmunk-physics.net/">Chipmunk2d</a> and its <a class="reference external" href="https://github.com/tito/cymunk">cymunk wrapper</a>.</p>
+<p>An entity-component architecture is used to control game object state and the logic of processing the game objects. This means that your game objects will be made up of collections of independent components that stricly hold data; each component corresponds to a GameSystem that will perform all data processing on the components, in the update loop each frame, and as a result of user interaction or other programmaticaly generated events. All memory for
+the built-in components is allocated statically: if you would like learn more
+about memory management, <a class="reference external" href="http://kivent.org/docs/memory_handlers.html">read here</a>.</p>
+<p>KivEnt is built with a modular architecture and designed to have both a python api and a c-level cython api that allows more performant access to your game data. This makes it suitable for quickly prototyping a mechanic completely in python, and relatively trivial to then deeply cythonize that GameSystem if you find it to be performance sensitive. This process has already been done for the built-in components meaning they are ready for you to build new, performant game systems on top of them.</p>
+<p>The entire framework is made available to you with an MIT license so that you have the freedom to build whatever you want on top of it and monetize it however you like.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gameworld.html">GameWorld</a></li>
+<li class="toctree-l1"><a class="reference internal" href="entity.html">Entity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gamesystems.html">Game Systems</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gamesystems.html#module-kivent_core.systems.gamesystem">Python GameSystems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gamesystems.html#module-kivent_core.systems.staticmemgamesystem">Cython GameSystems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gamesystems.html#aggregators">Aggregators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gamesystems.html#position-systems">Position Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gamesystems.html#rotate-systems">Rotate Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gamesystems.html#scale-systems">Scale Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gamesystems.html#color-systems">Color Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gamesystems.html#rendering-systems">Rendering Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gamesystems.html#local-coordinate-system">Local coordinate system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gamesystems.html#controlling-the-viewing-area">Controlling the Viewing Area</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="managers.html">Managers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="managers.html#module-kivent_core.managers.system_manager">System Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="managers.html#resource-managers">Resource Managers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="physics.html">The Cymunk Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="physics.html#physics">Physics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="physics.html#interaction">Interaction</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="particles.html">Particles</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="particles.html#emitters">Emitters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="particles.html#id1">Particles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="particles.html#renderers">Renderers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rendering.html">Rendering</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html#vbos">VBOs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html#instructions">Instructions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html#models">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html#vertex-formats">Vertex Formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html#frame-objects">Frame Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html#batching">Batching</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="memory_handlers.html">Memory Handlers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memory_handlers.html#buffer">Buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory_handlers.html#memoryblock">MemoryBlock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory_handlers.html#memorypool">MemoryPool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory_handlers.html#memoryzone">MemoryZone</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory_handlers.html#blockzone">BlockZone</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory_handlers.html#zonedblock">ZonedBlock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory_handlers.html#blockindex">BlockIndex</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory_handlers.html#poolindex">PoolIndex</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory_handlers.html#zoneindex">ZoneIndex</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory_handlers.html#indexedmemoryzone">IndexedMemoryZone</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory_handlers.html#memrange">memrange</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tiled.html">The Maps Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tiled.html#tiled-managers">Tiled Managers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tiled.html#systems">Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tiled.html#module-kivent_maps.map_utils">Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tiled.html#module-kivent_maps.map_data">Map Data</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="gameworld.html" class="btn btn-neutral float-right" title="GameWorld" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2017, Jacob Kovac.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

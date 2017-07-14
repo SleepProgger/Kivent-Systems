@@ -1,0 +1,1137 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Managers &mdash; KivEnt 2.2.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="KivEnt 2.2.0 documentation" href="index.html"/>
+        <link rel="next" title="The Cymunk Module" href="physics.html"/>
+        <link rel="prev" title="Game Systems" href="gamesystems.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> KivEnt
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="gameworld.html">GameWorld</a></li>
+<li class="toctree-l1"><a class="reference internal" href="entity.html">Entity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gamesystems.html">Game Systems</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Managers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-kivent_core.managers.system_manager">System Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#resource-managers">Resource Managers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="physics.html">The Cymunk Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="particles.html">Particles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rendering.html">Rendering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_handlers.html">Memory Handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tiled.html">The Maps Module</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">KivEnt</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Managers</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/managers.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="managers">
+<h1>Managers<a class="headerlink" href="#managers" title="Permalink to this headline">¶</a></h1>
+<p><strong>Most of these Classes have cdefed functions that cannot be read by
+Sphinx. Read the source if you want to find out more about using them.</strong></p>
+<dl class="class">
+<dt id="kivent_core.managers.entity_manager.EntityManager">
+<em class="property">class </em><code class="descclassname">kivent_core.managers.entity_manager.</code><code class="descname">EntityManager</code><a class="headerlink" href="#kivent_core.managers.entity_manager.EntityManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>The EntityManager will keep track of the entities in your GameWorld.
+An Entity is technically nothing more than an entry in an array of
+unsigned int. The entity is made up of system_count + 1 entries.
+The first entry is the actual identity of the entity, if it is inactive
+this will be &lt;unsigned int&gt;-1.
+The rest of the entries will correspond to the components of your
+GameSystem with do_components set to True. When a component is active its
+id will be stored here, if it is inactive the entry will be
+&lt;unsigned int&gt;-1.</p>
+<p>This means technically there is a limit to the number of components and
+entities you can have at 4,294,967,294. It is however extremely unlikely
+your game will consist of this many entities or components. Probably KivEnt
+will also be hopelessly overwhelmed.</p>
+<p>EntityManager is typically allocated as part of your GameWorld.allocate.</p>
+<p><a href="#id1"><span class="problematic" id="id2">**</span></a>Attributes: (Cython Access Only):</p>
+<blockquote>
+<div><p><strong>memory_index</strong> (IndexedMemoryZone): Zoned memory for storing the
+Entity indices.</p>
+<p><strong>system_count</strong> (unsigned int): The number of slots reserved per
+Entitywill be one more than the initialization system_count arg as the
+first entry is used internally to determine whether an entity is
+active.</p>
+</div></blockquote>
+<dl class="method">
+<dt id="kivent_core.managers.entity_manager.EntityManager.allocate">
+<code class="descname">allocate</code><span class="sig-paren">(</span><em>self</em>, <em>master_buffer</em>, <em>gameworld</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.entity_manager.EntityManager.allocate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.entity_manager.EntityManager.get_entity_entry">
+<code class="descname">get_entity_entry</code><span class="sig-paren">(</span><em>self</em>, <em>entity_id</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.entity_manager.EntityManager.get_entity_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Will return a list of <strong>system_count</strong> items corresponding to all
+the indices that make up the entity. If a value is 4,294,967,295,
+which is &lt;unsigned int&gt;-1, that component is inactive. If the first
+value is &lt;unsigned int&gt;-1 the entity itself is currently inactive.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>entity_id (unsigned int): Identity of the entity to return.</dd>
+<dt>Return:</dt>
+<dd>list of ints : The component_id of each of the GameSystem with
+do_components.</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_core.managers.game_manager.GameManager">
+<em class="property">class </em><code class="descclassname">kivent_core.managers.game_manager.</code><code class="descname">GameManager</code><a class="headerlink" href="#kivent_core.managers.game_manager.GameManager" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<div class="section" id="module-kivent_core.managers.system_manager">
+<span id="system-management"></span><h2>System Management<a class="headerlink" href="#module-kivent_core.managers.system_manager" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_core.managers.system_manager.ZoneConfig">
+<em class="property">class </em><code class="descclassname">kivent_core.managers.system_manager.</code><code class="descname">ZoneConfig</code><a class="headerlink" href="#kivent_core.managers.system_manager.ZoneConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores the configuration information for a zone in the GameWorld’s
+GameSystems.</p>
+<dl class="docutils">
+<dt><strong>Attributes: (Cython Access Only)</strong></dt>
+<dd><p class="first"><strong>count</strong> (unsigned int): Number of entities in this zone.</p>
+<p><strong>zone_name</strong> (str): Name of the zone.</p>
+<p class="last"><strong>systems</strong> (list): List of the names of the GameSystem that will
+reserve space for this zone.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_core.managers.system_manager.SystemConfig">
+<em class="property">class </em><code class="descclassname">kivent_core.managers.system_manager.</code><code class="descname">SystemConfig</code><a class="headerlink" href="#kivent_core.managers.system_manager.SystemConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Organizes the ZoneConfigs for a GameWorld. Responsible for adding
+new zones to the GameWorld and adding systems to those zones.</p>
+<dl class="docutils">
+<dt><strong>Attributes: (Cython Access Only)</strong></dt>
+<dd><strong>zone_configs</strong> (dict): Hashmap of ZoneConfig objects stored by
+keys of the zone_name (str).</dd>
+</dl>
+<dl class="method">
+<dt id="kivent_core.managers.system_manager.SystemConfig.add_system_to_zone">
+<code class="descname">add_system_to_zone</code><span class="sig-paren">(</span><em>self</em>, <em>system_name</em>, <em>zone_name</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.system_manager.SystemConfig.add_system_to_zone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a system to the zone specified. An already added system cannot
+be added again (will raise a SystemAlreadyAddedError).
+Args:</p>
+<blockquote>
+<div><p>system_name (str): The name of the system to add to the zone.</p>
+<p>zone_name (str): The name of the zone.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.system_manager.SystemConfig.add_zone">
+<code class="descname">add_zone</code><span class="sig-paren">(</span><em>self</em>, <em>zone_name</em>, <em>count</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.system_manager.SystemConfig.add_zone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new ZoneConfig object and adds it to the <strong>zone_configs</strong>
+dictionary. A ZoneAlreadyAddedError will be raised if the zone_name
+has been previously used.
+Args:</p>
+<blockquote>
+<div><p>zone_name (str): The name of the zone to add.</p>
+<p>count (int): The number of entities the zone will contain.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.system_manager.SystemConfig.get_config_dict">
+<code class="descname">get_config_dict</code><span class="sig-paren">(</span><em>self</em>, <em>system_name</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.system_manager.SystemConfig.get_config_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the config_dict for a specific system_name. This will be
+a dictionary of zone_name, zone_count pairings. If the default zone,
+‘general’, is not registered with the Zone it will be inserted
+automatically with a DEFAULT_COUNT.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>system_name (str): Name of the system to get the config dict for.</dd>
+<dt>Return:</dt>
+<dd>config_dict (dict): zone_name, zone_count hashmap that includes
+all the zones that should be allocated for the given system.</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_core.managers.system_manager.SystemManager">
+<em class="property">class </em><code class="descclassname">kivent_core.managers.system_manager.</code><code class="descname">SystemManager</code><a class="headerlink" href="#kivent_core.managers.system_manager.SystemManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manages the GameSystems attached to the GameWorld as well as the zone
+configuration for systems which use the IndexedMemoryZone for holding
+entity data. Supports dictionary style key access of systems directly.
+There are two types of GameSystem in KivEnt, systems with components, and
+systems without. The GameWorld will reserve <strong>system_count</strong> spaces for
+components for each Entity, meaning that we cannot have more than
+<strong>system_count</strong> number of GameSystems that expect to attach components.
+This value will typically be set with <strong>set_system_count</strong> as part of
+GameWorld initialization. If <strong>set_system_count</strong> is not called,
+system_count will be system_manager.DEFAULT_SYSTEM_COUNT. Component systems
+will take up the first N spaces in the systems list, with non-component
+systems appearing afterwards. There is no limit to the number of
+non-component GameSystem.</p>
+<dl class="docutils">
+<dt><strong>Attributes: (Cython Acces Only)</strong></dt>
+<dd><p class="first"><strong>systems</strong> (list): List of the currently active systems, unused
+slots will have a value of None.</p>
+<p><strong>system_index</strong> (dict): Maps the name of the systems to their index
+in the systems list, which corresponds to the component index in the
+gameworld.entities IndexedMemoryZone.</p>
+<p><strong>system_config</strong> (SystemConfig): Manages the zone counts for each
+GameSystem that makes use of the IndexedMemoryZone.</p>
+<p><strong>system_count</strong> (unsigned int): The number of component systems
+with space reserved in the gameworld.entities IndexedMemoryZone.</p>
+<p><strong>current_count</strong> (unsigned int): The number of component systems
+currently in use.</p>
+<p><strong>free_indices</strong> (list): List used internally to track component system
+slots that have had their system removed and are available for reuse.</p>
+<p><strong>first_non_component_index</strong> (unsigned int): Start of the non-component
+systems in the systems list.</p>
+<p><strong>free_non_component_indices</strong> (list): List used internally to track
+slots for systems that have been removed that do not use components.</p>
+<p class="last"><strong>update_order</strong> (list): <em>Accessible from Python</em>. Provides a list of
+indices that dictate the order the GameWorld should update the systems
+in. When setting provide the system_name and internally the appropriate
+index will be found. From cython you can work directly with the
+<strong>_update_order</strong> attribute.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="kivent_core.managers.system_manager.SystemManager.add_system">
+<code class="descname">add_system</code><span class="sig-paren">(</span><em>self</em>, <em>system_name</em>, <em>system</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.system_manager.SystemManager.add_system" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a new system to the manager. If the system have do_components
+is True, <strong>current_count</strong> will need to be less than <strong>system_count</strong>
+or a TooManySystemsError will be raised. There is no limit to number
+of GameSystem that do not do_components. By default the system will be
+added to the end of the <strong>update_order</strong>. If you wish to change the
+order in which systems are updated set the <strong>update_order</strong> manually
+after adding all systems.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">system_name (str): The name of the system being added.</p>
+<p class="last">system (GameSystem): Reference to the actual system being added.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.system_manager.SystemManager.add_zone">
+<code class="descname">add_zone</code><span class="sig-paren">(</span><em>self</em>, <em>zone_name</em>, <em>count</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.system_manager.SystemManager.add_zone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a new zone to the <strong>system_config</strong>.
+Args:</p>
+<blockquote>
+<div><p>zone_name (str): Name of the zone to be added.</p>
+<p>count (unsigned int): Number of entities to add.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.system_manager.SystemManager.allocate">
+<code class="descname">allocate</code><span class="sig-paren">(</span><em>self</em>, <em>master_buffer</em>, <em>gameworld</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.system_manager.SystemManager.allocate" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">master_buffer (Buffer): The buffer from which the space for the
+entity IndexedMemoryZone will be allocated.</p>
+<p class="last">gameworld (GameWorld): The GameWorld for your application.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.system_manager.SystemManager.configure_system_allocation">
+<code class="descname">configure_system_allocation</code><span class="sig-paren">(</span><em>self</em>, <em>system_name</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.system_manager.SystemManager.configure_system_allocation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configures a GameSystem with the <strong>system_config</strong> using the
+GameSystem.zones list property. The GameSystem will be registered to
+use all zones who have their name listed in zones. This should be called
+during GameWorld.allocate after SystemManager.add_system has been
+called.
+Args:</p>
+<blockquote>
+<div>system_name (str): name of the system to be configured</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.system_manager.SystemManager.get_system_config_dict">
+<code class="descname">get_system_config_dict</code><span class="sig-paren">(</span><em>self</em>, <em>system_name</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.system_manager.SystemManager.get_system_config_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the config dict for a specific system_name from
+<strong>system_config</strong>, which is a zone_name, zone_count pairing for each
+zone that system will allocate.
+Args:</p>
+<blockquote>
+<div>system_name (str): Name of the system to get the config_dict for</div></blockquote>
+<dl class="docutils">
+<dt>Return:</dt>
+<dd>config_dict (dict): zone_name, zone_count pairing for the system.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.system_manager.SystemManager.remove_system">
+<code class="descname">remove_system</code><span class="sig-paren">(</span><em>self</em>, <em>system_name</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.system_manager.SystemManager.remove_system" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes an existing system from the system_manager.
+Args:</p>
+<blockquote>
+<div>system_name (str): Name of the system to removed</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.system_manager.SystemManager.set_system_count">
+<code class="descname">set_system_count</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int system_count</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.system_manager.SystemManager.set_system_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the system_count, which is the number of systems that will
+have space allocated for containing components in the gameworld.entities
+IndexedMemoryZone. Should be set as part of GameWorld.allocate.
+Args:</p>
+<blockquote>
+<div>system_count (unsigned int): Number of systems to reserve space
+for components.</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="resource-managers">
+<h2>Resource Managers<a class="headerlink" href="#resource-managers" title="Permalink to this headline">¶</a></h2>
+<p>Resource handling is not quite done yet so consider these sections
+slightly experimental and know they will probably change in the future. As of
+2.1 a new ModelManager has been introduced with slightly different functionality.</p>
+<dl class="class">
+<dt id="kivent_core.managers.resource_managers.ModelManager">
+<em class="property">class </em><code class="descclassname">kivent_core.managers.resource_managers.</code><code class="descname">ModelManager</code><span class="sig-paren">(</span><em>allocation_size=102400</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.ModelManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>The ModelManager is responsible for managing all VertexModel that will be
+used during your game’s rendering. A model is a collection of vertex and
+index data describing the triangles that make up your entities geometry.]</p>
+<p>The ModelManager ensures that all models using the same vertex format are
+stored contiguously, helping to ensure that your rendering does not have to
+jump around so much in memory.</p>
+<p>If you do not provide custom instructions to the allocation function,
+the ModelManager will register 100 KiB for each format found in the
+rendering.vertex_formats.format_registrar. The memory will be split 72/25
+vertices to indices.</p>
+<p>Remember every entity that uses a model of the same name will share all
+of that vertex data and modifying ones model will modify all. There is
+copying functionality built into the loading functions in case you want to
+create unique models per entity.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>models</strong> (dict): A dict of all the loaded models, keyed by name.</p>
+<p><strong>key_counts</strong> (dict): The count of the number of copies made of a
+certain model. Used internally if we are constructing a copy of an
+already loaded model.</p>
+<p class="last"><strong>model_register</strong> (dict): Used to keep track of the entities actively
+using this model. Keyed by model_name will be dicts of key = entity_id,
+value = system_id of renderer for that entity. If you want to modify
+a model attached to many entities, use the model_register to find out
+which entities are actively using that model.</p>
+</dd>
+<dt><strong>Attributes: (Cython Access Only)</strong></dt>
+<dd><p class="first"><strong>allocation_size</strong> (unsigned int): Set during initalization of the
+ModelManager, this is the amount of space to be reserved for each
+vertex format if an empty formats_to_allocate dict is provided to
+<strong>allocate</strong>. The space will be split 75/25 for vertices/indices.</p>
+<p class="last"><strong>memory_blocks</strong> (dict): A dict of dicts. Each format that gets
+allocated will have an entry here, that is a dict containing keys:
+‘vertices_block’ and ‘indices_block’. Models for that format will be
+allocated inside these MemoryBlock.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.ModelManager.allocate">
+<code class="descname">allocate</code><span class="sig-paren">(</span><em>self</em>, <em>master_buffer</em>, <em>gameworld</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.ModelManager.allocate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allocates space for loading models. Typically called as part of
+Gameworld.allocate.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>master_buffer (Buffer): The buffer to do allocation from.
+gameworld (GameWorld):</dd>
+<dt>Return:</dt>
+<dd>unsigned int: Number of bytes actually used by the ModelManager</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.ModelManager.combine_model_infos">
+<code class="descname">combine_model_infos</code><span class="sig-paren">(</span><em>self</em>, <em>list infos</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.ModelManager.combine_model_infos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a list of SVGModelInfo objects and combines them into the 
+minimum number of models that will fit that data. Each model will 
+be no more than 65535 vertices, as this is the limit to number of 
+vertices in a single model in ES2.0.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>infos (list): List of SVGModelInfo to combine.</dd>
+<dt>Return:</dt>
+<dd>list: New list of SVGModelInfo combined into the minimum number
+necessary to display the data.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.ModelManager.copy_model">
+<code class="descname">copy_model</code><span class="sig-paren">(</span><em>self</em>, <em>str model_to_copy</em>, <em>str model_name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.ModelManager.copy_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copies an existing model, creating a new model with the same data. If
+you set the model_name kwarg the new model will be stored under this
+name, otherwise the name of model being copied will be used, with
+do_copy set to True for <strong>load_model</strong>.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>model_to_copy (str): The name of the model to copy.</dd>
+<dt>Kwargs:</dt>
+<dd>model_name (str): The name to store the new model under. If None
+the model_to_copy name will be used.</dd>
+<dt>Return:</dt>
+<dd>str: Actual name of the copied model.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.ModelManager.get_center_and_bbox_from_infos">
+<code class="descname">get_center_and_bbox_from_infos</code><span class="sig-paren">(</span><em>self</em>, <em>list infos</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.ModelManager.get_center_and_bbox_from_infos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the bounding box and center info for the provided list of 
+SVGModelInfo.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>infos (list): List of SVGModelInfo to find the bounding box
+and center for.</dd>
+<dt>Return:</dt>
+<dd>dict: with keys ‘center’ and ‘bbox’. center is a 2-tuple of 
+center_x, center_y coordinates. bbox is a 4-tuple of leftmost x,
+bottom y, rightmost x, top y.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.ModelManager.get_model_info_for_svg">
+<code class="descname">get_model_info_for_svg</code><span class="sig-paren">(</span><em>self</em>, <em>str source</em>, <em>str svg_name=None</em>, <em>custom_fields=None</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.ModelManager.get_model_info_for_svg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the SVGModelInfo objects representing the elements in an 
+svg file. You can then parse this data depending on your needs 
+before loading the final assets. Use <strong>load_model_from_model_info</strong>
+to load your assets.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.ModelManager.load_model">
+<code class="descname">load_model</code><span class="sig-paren">(</span><em>self</em>, <em>str format_name</em>, <em>unsigned int vertex_count</em>, <em>unsigned int index_count</em>, <em>str name</em>, <em>do_copy=False</em>, <em>indices=None</em>, <em>vertices=None</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.ModelManager.load_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a new VertexModel, and allocates space in the MemoryBlock for its
+vertex format to hold the model. The model will be stored in the
+<strong>models</strong> dict.</p>
+<p>Load model does not fill your model with any data you should do that
+after creating it. Either by accessing the vertices yourself or through
+a function such as <strong>copy_model</strong> or <strong>load_textured_rectangle</strong>.</p>
+<p>The kwarg do_copy controls the behavior of the loaded. By default if we
+find a model has already been loaded under <strong>name</strong>, we simply return
+that already loaded model’s name. If do_copy is set to True we will
+actually create a new model that appends an underscore and number to
+the name provide. For instance, ‘test_model’ becomes ‘test_model_0’,
+and then ‘test_model_1’ and so on. Copying ‘test_model_0’ will create
+‘test_model_0_0’.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">format_name (str): The name of the vertex format this model should
+be created with.</p>
+<p>vertex_count (unsigned int): The number of vertices in the model.</p>
+<p>index_count (unsigned int): The number of indices for the model.</p>
+<p class="last">name (str): The name to store the model under.</p>
+</dd>
+<dt>Kwargs:</dt>
+<dd><p class="first">do_copy (bool): Defaults False, determines whether to copy the model
+if we find one with its name is already loaded.</p>
+<p>indices (list): If a list of indices is provided, the data will be
+loaded into your model. Make sure the len(indices) ==
+<strong>index_count</strong>.</p>
+<p>vertices (dict): Vertex data can be supplied in the form of a
+dictionary containing key is the index of vertex, and the value at
+the key is a dict with key vertex attribute,
+value at that attribute.</p>
+<p>For instance:</p>
+<div class="last highlight-python"><div class="highlight"><pre><span></span><span class="n">vertices</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;pos&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.</span><span class="p">),</span> <span class="n">uvs</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">)},</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;pos&#39;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">5.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">),</span> <span class="n">uvs</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)},</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;pos&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">5.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">),</span> <span class="n">uvs</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)},</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;pos&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">5.</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.</span><span class="p">),</span> <span class="n">uvs</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">)},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+<dt>Return:</dt>
+<dd>str: Returns the actual name the model has been stored under.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.ModelManager.load_model_from_model_info">
+<code class="descname">load_model_from_model_info</code><span class="sig-paren">(</span><em>self</em>, <em>SVGModelInfo info</em>, <em>str svg_name</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.ModelManager.load_model_from_model_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turns the data in a SVGModelInfo to an actual Model for use in 
+your game.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>info (SVGModelInfo): The data for the model you want to load.</p>
+<p>svg_name (str): The name of the svg file, previously returned by 
+<strong>get_model_info_for_svg</strong>.</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>Return:</dt>
+<dd>str: The key this model is registered under. Will be svg_name + ‘_’
++ element_id for the SVGModelInfo.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.ModelManager.load_model_from_pickle">
+<code class="descname">load_model_from_pickle</code><span class="sig-paren">(</span><em>self</em>, <em>str file_to_load</em>, <em>str model_name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.ModelManager.load_model_from_pickle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a previously pickled model.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>file_to_load (str): Name of the file to load.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.ModelManager.load_textured_rectangle">
+<code class="descname">load_textured_rectangle</code><span class="sig-paren">(</span><em>self</em>, <em>str format_name</em>, <em>float width</em>, <em>float height</em>, <em>str texture_key</em>, <em>str name</em>, <em>do_copy=False</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.ModelManager.load_textured_rectangle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a new model and sets it to be a textured quad (sprite).
+vertex_count will be set to 4, index_count to 6 with indices set to
+[0, 1, 2, 2, 3, 0].</p>
+<p>The uvs from <strong>texture_key</strong> will be used.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">format_name (str): Name of the vertex format to use.</p>
+<p>width (float): Width of the quad.</p>
+<p>height (float): Height of the quad.</p>
+<p>texture_key (str): Name of the texture to use.</p>
+<p class="last">name (str): Name to load the model under.</p>
+</dd>
+<dt>Kwargs:</dt>
+<dd>do_copy (bool): Defaults False. Kwarg forwarded to load_model,
+controls whether we will copy the model if name is laready in use.</dd>
+<dt>Return:</dt>
+<dd>str: Actual name of the loaded model.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.ModelManager.pickle_model">
+<code class="descname">pickle_model</code><span class="sig-paren">(</span><em>self</em>, <em>str model_name</em>, <em>str directory_name</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.ModelManager.pickle_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves a model to disk using Pickle. Data will be stored as a
+dictionary containing keys ‘vertices’, ‘indices’, and ‘format_name’.</p>
+<p>The name of the file will be os.path.join(directory_name,
+model_name + ‘.kem’).</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">model_name (str): The name of the model to save.</p>
+<p class="last">directory_name (str): The directory where you want to save the
+model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.ModelManager.register_entity_with_model">
+<code class="descname">register_entity_with_model</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int entity_id</em>, <em>str system_id</em>, <em>str model_name</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.ModelManager.register_entity_with_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to register entities that are using a certain model. Typically
+called internally as part of Renderer.init_component or the logic
+associated with setting a RenderComponent.model.</p>
+<p>Note: At the moment you should not register the same model on the same
+entity with multiple renderers. This is not handled. Although I’m not
+quite certain when you would do that.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">entity_id (unsigned int): Id of the entity being registered.</p>
+<p>system_id (str): system_id of the Renderer that this entity is
+attached to with the model.</p>
+<p class="last">model_name (str): Name of the model to register the entity_id with.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.ModelManager.unload_model">
+<code class="descname">unload_model</code><span class="sig-paren">(</span><em>self</em>, <em>str model_name</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.ModelManager.unload_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unloads the model. Freeing it for GC. Make sure you have not kept
+any references to your model yourself.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>model_name (str): Name of the model to unload.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.ModelManager.unload_models_for_svg">
+<code class="descname">unload_models_for_svg</code><span class="sig-paren">(</span><em>self</em>, <em>str svg_name</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.ModelManager.unload_models_for_svg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.ModelManager.unregister_entity_with_model">
+<code class="descname">unregister_entity_with_model</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int entity_id</em>, <em>str model_name</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.ModelManager.unregister_entity_with_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unregisters a previously registered entity.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">entity_id (unsigned int): The id of the entity being registered.</p>
+<p class="last">model_name (str): The name of the model that entity was registered
+with.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_core.managers.resource_managers.TextureManager">
+<em class="property">class </em><code class="descclassname">kivent_core.managers.resource_managers.</code><code class="descname">TextureManager</code><a class="headerlink" href="#kivent_core.managers.resource_managers.TextureManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>The TextureManager handles the loading of all image resources into our
+game engine. Use <strong>load_image</strong> for image files and <strong>load_atlas</strong> for
+.atlas files. Do not load 2 images with the same name even in different
+atlas files. Prefer to access kivent.renderers.texture_manager than
+making your own instance.</p>
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.TextureManager.get_groupkey_from_texkey">
+<code class="descname">get_groupkey_from_texkey</code><span class="sig-paren">(</span><em>self</em>, <em>tex_key</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.TextureManager.get_groupkey_from_texkey" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.TextureManager.get_size">
+<code class="descname">get_size</code><span class="sig-paren">(</span><em>self</em>, <em>tex_key</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.TextureManager.get_size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.TextureManager.get_size_by_name">
+<code class="descname">get_size_by_name</code><span class="sig-paren">(</span><em>self</em>, <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.TextureManager.get_size_by_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.TextureManager.get_texkey_from_name">
+<code class="descname">get_texkey_from_name</code><span class="sig-paren">(</span><em>self</em>, <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.TextureManager.get_texkey_from_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.TextureManager.get_texkey_in_group">
+<code class="descname">get_texkey_in_group</code><span class="sig-paren">(</span><em>self</em>, <em>tex_key</em>, <em>group_key</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.TextureManager.get_texkey_in_group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.TextureManager.get_texname_from_texkey">
+<code class="descname">get_texname_from_texkey</code><span class="sig-paren">(</span><em>self</em>, <em>tex_key</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.TextureManager.get_texname_from_texkey" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.TextureManager.get_texture">
+<code class="descname">get_texture</code><span class="sig-paren">(</span><em>self</em>, <em>tex_key</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.TextureManager.get_texture" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.TextureManager.get_texture_by_name">
+<code class="descname">get_texture_by_name</code><span class="sig-paren">(</span><em>self</em>, <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.TextureManager.get_texture_by_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.TextureManager.get_uvs">
+<code class="descname">get_uvs</code><span class="sig-paren">(</span><em>self</em>, <em>tex_key</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.TextureManager.get_uvs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.TextureManager.load_atlas">
+<code class="descname">load_atlas</code><span class="sig-paren">(</span><em>self</em>, <em>source</em>, <em>datatype='json'</em>, <em>dirname=None</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.TextureManager.load_atlas" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.TextureManager.load_image">
+<code class="descname">load_image</code><span class="sig-paren">(</span><em>self</em>, <em>source</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.TextureManager.load_image" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.TextureManager.load_texture">
+<code class="descname">load_texture</code><span class="sig-paren">(</span><em>self</em>, <em>name</em>, <em>texture</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.TextureManager.load_texture" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.resource_managers.TextureManager.unload_texture">
+<code class="descname">unload_texture</code><span class="sig-paren">(</span><em>self</em>, <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.resource_managers.TextureManager.unload_texture" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_core.managers.sound_manager.SoundManager">
+<em class="property">class </em><code class="descclassname">kivent_core.managers.sound_manager.</code><code class="descname">SoundManager</code><a class="headerlink" href="#kivent_core.managers.sound_manager.SoundManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>The SoundManager provides additional features on top of Kivy’s Sound and
+SoundLoader classes, making it easier for you to integrate sounds into
+your game, and controlling the ability to play the same sound multiple
+times simultaneously.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>music_volume</strong> (NumericProperty): The master volume from 0.0 to 1.0
+for music tracks.</p>
+<p><strong>sound_volume</strong> (NumericProperty): The master volume from 0.0 to 1.0
+for sounds. Will be multiplied by the specified volume.</p>
+<p><strong>cutoff</strong> (NumericProperty): If volume is below this level the sound
+will not be played at all.</p>
+<p><strong>current_track</strong> (StringProperty): The name of the music track
+currently playing.</p>
+<p><strong>loop_music</strong> (BooleanProperty): If True when one music track finishes
+playing another will be randomly chosen from the loaded music tracks
+and scheduled for playing between 0 and <strong>max_wait_for_music</strong> seconds
+from now.</p>
+<p><strong>max_wait_for_music</strong> (NumericProperty): The maximum amount of time
+to wait before automatically playing another music track when
+<strong>loop_music</strong> is True.</p>
+<p class="last"><strong>music_dict</strong> (dict): Dictionary containing all tracks loaded
+by <strong>load_music</strong>.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="kivent_core.managers.sound_manager.SoundManager.load_music">
+<code class="descname">load_music</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.sound_manager.SoundManager.load_music" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a music track under the provided name from the provided address.
+The entry into <strong>music_dict</strong> will be a dict containing both the track
+object loaded by SoundLoader and the file_address, found under those 
+keys.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">track_name (string): Name to load music under.</p>
+<p class="last">file_address (string): Location of the file.</p>
+</dd>
+<dt>Return:</dt>
+<dd>string: The name of the track that has been loaded, will be same
+as provided arg.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.sound_manager.SoundManager.load_sound">
+<code class="descname">load_sound</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.sound_manager.SoundManager.load_sound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a sound, will load track_count copies of the sound so that 
+up to that many sounds can be played at the same time. Actual number
+of sounds played will be limited by the number of sound channels
+available. Returns the integer identifier for the sound to be used
+with the higher performance <strong>play_direct</strong>, <strong>play_direct_loop</strong>, 
+and <strong>stop_direct</strong> functions as well as making it easier to 
+store sounds in high performance C components for your entities.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">sound_name (str): The name to load the sound file under.</p>
+<p class="last">file_address (Str): The actual location of the file in memory.</p>
+</dd>
+<dt>Kwargs:</dt>
+<dd>track_count (int): The number of times to load the sound,
+equivalent to the maximum number of instances of this sound
+can be played simultaneously. Defaults to 4.</dd>
+<dt>Return:</dt>
+<dd>int: the integer identifier for the loaded sound.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.sound_manager.SoundManager.on_music_volume">
+<code class="descname">on_music_volume</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.sound_manager.SoundManager.on_music_volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback called when music_volume is changed, will change volume for
+the <strong>current_track</strong> if it is not None.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">instance (SoundManager): Should be same as self.</p>
+<p class="last">value (float): The new value for the volume.</p>
+</dd>
+<dt>Return:</dt>
+<dd>None</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.sound_manager.SoundManager.on_track_stop">
+<code class="descname">on_track_stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.sound_manager.SoundManager.on_track_stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback called when on_stop event is fired after a music track
+quites playing. If <strong>loop_music</strong> is True another music track will
+be chosen and begin playing in a randomized amount of time from
+0.0 to <strong>max_wait_for_music</strong> seconds later.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>sound (Sound): The track object that just finished playing.</dd>
+<dt>Return:</dt>
+<dd>None</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.sound_manager.SoundManager.play">
+<code class="descname">play</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.sound_manager.SoundManager.play" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper over play_direct that uses the string key for a sound instead
+of integer key.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">sound_name (string): The string key for the sound to be played.</p>
+<p class="last">volume (float): The volume of sound, between 0.0 and 1.0.</p>
+</dd>
+<dt>Return:</dt>
+<dd>Sound: The instance of the sound being played. Will be None if no
+sound was played.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.sound_manager.SoundManager.play_direct">
+<code class="descname">play_direct</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.sound_manager.SoundManager.play_direct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plays the sound specified by the integer key given at the volume
+provided. If volume is below <strong>cutoff</strong>, the sound will not be played.
+If a sound is played, the specific instance of the sound will be
+returned, otherwise None.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">sound_index (int): The integer key for the sound to be played.</p>
+<p class="last">volume (float): The volume to play the sound at, will be
+multiplied by the <strong>sound_volume</strong></p>
+</dd>
+<dt>Return:</dt>
+<dd>Sound: The instance of the sound being played. Will be None if 
+no sound was played.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.sound_manager.SoundManager.play_direct_loop">
+<code class="descname">play_direct_loop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.sound_manager.SoundManager.play_direct_loop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plays the sound specified by the integer key given at the volume
+provided. If volume is below <strong>cutoff</strong>, the sound will not be played.
+If a sound is played, the specific instance of the sound will be
+returned, otherwise None. The sound’s loop property will be set to True</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">sound_index (int): The integer key for the sound to be played.</p>
+<p class="last">volume (float): The volume to play the sound at, will be
+multiplied by the <strong>sound_volume</strong></p>
+</dd>
+<dt>Return:</dt>
+<dd>Sound: The instance of the sound being played. Will be None if no
+sound was played.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.sound_manager.SoundManager.play_loop">
+<code class="descname">play_loop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.sound_manager.SoundManager.play_loop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper over play_direct_loop that uses the string key for a sound
+instead of integer key. The sound will be set to looping.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">sound_name (string): The string key for the sound to be played.</p>
+<p class="last">volume (float): The volume of sound, between 0.0 and 1.0.</p>
+</dd>
+<dt>Return:</dt>
+<dd>Sound: The instance of the sound being played. Will be None if no
+sound was played.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.sound_manager.SoundManager.play_track">
+<code class="descname">play_track</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.sound_manager.SoundManager.play_track" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plays the track with the given name. If a previous track is playing,
+<strong>current_track</strong> is not None, then that track will be stopped.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>track_name (string): The name of the track to play</dd>
+<dt>Return:</dt>
+<dd>None</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.sound_manager.SoundManager.schedule_play">
+<code class="descname">schedule_play</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.sound_manager.SoundManager.schedule_play" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback for playing a sound by string key for use with Clock.schedule.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">sound_name (string): The string name of the sound.</p>
+<p>volume (float): The volume of sound, between 0.0 and 1.0.</p>
+<p class="last">dt (float): The time passed since this function was clock 
+scheduled.</p>
+</dd>
+<dt>Return:</dt>
+<dd>None</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.sound_manager.SoundManager.stop">
+<code class="descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.sound_manager.SoundManager.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper over stop_direct that uses a string key for a sound instead of
+integer key. Stops all instances of the sound being played.
+Sets loop to False</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>sound_name (string): The string key for the sound to be played.</dd>
+<dt>Return:</dt>
+<dd>None</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.sound_manager.SoundManager.stop_current_track">
+<code class="descname">stop_current_track</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.sound_manager.SoundManager.stop_current_track" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stops the current music track from playing.</p>
+<dl class="docutils">
+<dt>Return:</dt>
+<dd>None</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.sound_manager.SoundManager.stop_direct">
+<code class="descname">stop_direct</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.sound_manager.SoundManager.stop_direct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stops all instances of the sound being played. Sets loop to False
+Args:</p>
+<blockquote>
+<div>sound_index (int): The integer key for the sound to be played.</div></blockquote>
+<dl class="docutils">
+<dt>Return:</dt>
+<dd>None</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_core.managers.animation_manager.AnimationManager">
+<em class="property">class </em><code class="descclassname">kivent_core.managers.animation_manager.</code><code class="descname">AnimationManager</code><a class="headerlink" href="#kivent_core.managers.animation_manager.AnimationManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>AnimationManager is responsible for loading and managing animation
+sequences for the GameWorld. Each animation sequence is a list of frames
+which stores texture and model for that frame and the duration for which
+the frame should be displayed in milliseconds</p>
+<p>Animation data takes the form:
+{</p>
+<blockquote>
+<div>‘texture’: texture name for animation,
+‘model’ : model name for animation,
+‘duration’ : time</div></blockquote>
+<p>}</p>
+<dl class="docutils">
+<dt>Attributes:</dt>
+<dd>animations: Dictionary of loaded animations, keyed by name</dd>
+</dl>
+<dl class="method">
+<dt id="kivent_core.managers.animation_manager.AnimationManager.allocate">
+<code class="descname">allocate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.animation_manager.AnimationManager.allocate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allocate memory to store frame lists. Called internally during
+gameworld init.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.animation_manager.AnimationManager.load_animation">
+<code class="descname">load_animation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.animation_manager.AnimationManager.load_animation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Responsible for creating a FrameList from a python
+list specifying frames and storing it in static memory.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">name (str): The name by which to store this animation</p>
+<p>frame_count (int): Number of frames in the sequence</p>
+<p class="last">frames (list): The list of frames, each item in the list
+is a dict containing ‘texture’,’model’ and ‘duration’.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.animation_manager.AnimationManager.load_json">
+<code class="descname">load_json</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.animation_manager.AnimationManager.load_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parser for a json file containing animation</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_core.managers.animation_manager.AnimationManager.save_to_json">
+<code class="descname">save_to_json</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kivent_core.managers.animation_manager.AnimationManager.save_to_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the animation specified by items in <cite>names</cite> to <cite>filename</cite></p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><p class="first">names (list): List of animation names to be stored in
+the json file</p>
+<p class="last">filename (str): Path to json file</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="physics.html" class="btn btn-neutral float-right" title="The Cymunk Module" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="gamesystems.html" class="btn btn-neutral" title="Game Systems" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2017, Jacob Kovac.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

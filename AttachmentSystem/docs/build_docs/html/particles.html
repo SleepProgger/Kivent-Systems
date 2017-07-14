@@ -1,0 +1,643 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Particles &mdash; KivEnt 2.2.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="KivEnt 2.2.0 documentation" href="index.html"/>
+        <link rel="next" title="Rendering" href="rendering.html"/>
+        <link rel="prev" title="The Cymunk Module" href="physics.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> KivEnt
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="gameworld.html">GameWorld</a></li>
+<li class="toctree-l1"><a class="reference internal" href="entity.html">Entity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gamesystems.html">Game Systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="managers.html">Managers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="physics.html">The Cymunk Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Particles</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#emitters">Emitters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Particles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#renderers">Renderers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rendering.html">Rendering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_handlers.html">Memory Handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tiled.html">The Maps Module</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">KivEnt</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Particles</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/particles.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="particles">
+<h1>Particles<a class="headerlink" href="#particles" title="Permalink to this headline">¶</a></h1>
+<p>The particles module can be used to easily add particle effects to your app.
+You will be most concerned with using the EmitterSystem module directly,
+but be sure you have an EmitterSystem, ParticleSystem, and ParticleRenderer.
+You can use the Particle Panda 2 application to produce your own effects
+using a graphical editor.</p>
+<div class="section" id="emitters">
+<h2>Emitters<a class="headerlink" href="#emitters" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_particles.emitter.EmitterSystem">
+<em class="property">class </em><code class="descclassname">kivent_particles.emitter.</code><code class="descname">EmitterSystem</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_particles.emitter.EmitterSystem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processing Depends On: EmitterSystem, PositionSystem2D, RotateSystem2D</p>
+<p>The EmitterSystem manages attaching particle effects to entities. Each 
+Entity can have up to particle_config.MAX_EMITTERS emitters attached at 
+once. This defaults to 8. If you wish to have more emitters, change this
+value in particle_config.pxi and recompile kivent_particles.</p>
+<p>You need to load an emitter before attaching it to an Entity. This can be 
+done either through providing a dictionary of properties, using 
+load_effect_from_data, or loading a .kep file, using load_effect. Emitters 
+can then be added during init_entity by including the name of the effects 
+to attach, or by calling add_effect.</p>
+<p>This GameSystem will use the entities PositionSystem2D and RotateSystem2D
+components to influence the location of particles.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>loaded_effects</strong> (list): Returns a list of the names for each effect 
+that has been loaded.</p>
+<p class="last"><strong>particle_system</strong> (ObjectProperty): Reference to the ParticleSystem 
+that will handle the creation and update of individual particles for
+the emitters of this system. Typically you will link this in your .kv 
+file.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="kivent_particles.emitter.EmitterSystem.add_effect">
+<code class="descname">add_effect</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int entity_id</em>, <em>str effect_name</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_particles.emitter.EmitterSystem.add_effect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Args:</p>
+<blockquote>
+<div><p>entity_id (unsigned int): Id of the entity to add the effect to.</p>
+<p>effect_name (str): Name of the effect to add.</p>
+</div></blockquote>
+<p>Return:</p>
+<blockquote>
+<div>int: returns the index in the emitters list for the
+EmitterComponent of the new effect.</div></blockquote>
+<p>This function will create a new effect for your entity that already 
+have an EmitterComponent. If MAX_EMITTERS is exceeded a TooManyEmitters
+exception will be raised.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_particles.emitter.EmitterSystem.clear_component">
+<code class="descname">clear_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_particles.emitter.EmitterSystem.clear_component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_particles.emitter.EmitterSystem.copy_data_into_emitter">
+<code class="descname">copy_data_into_emitter</code><span class="sig-paren">(</span><em>self</em>, <em>ParticleEmitter to_emitter</em>, <em>str effect_name</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_particles.emitter.EmitterSystem.copy_data_into_emitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Args:</p>
+<blockquote>
+<div><p>to_emitter (ParticleEmitter): Emitter to copy the state of the 
+effect into.</p>
+<p>effect_name (str): Name of the loaded effect you want to copy 
+the state of.</p>
+</div></blockquote>
+<p>This function will efficiently copy the prototype loaded under 
+effect_name into the provided ParticleEmitter.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_particles.emitter.EmitterSystem.create_effect">
+<code class="descname">create_effect</code><span class="sig-paren">(</span><em>self</em>, <em>str effect_name</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_particles.emitter.EmitterSystem.create_effect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Args:</p>
+<blockquote>
+<div>effect_name (str): Name of the loaded effect from which the new 
+Emitter will copy its starting data.</div></blockquote>
+<p>Return:</p>
+<blockquote>
+<div>ParticleEmitter: The new emitter.</div></blockquote>
+<p>Typically called internally as part of the init_component or 
+add_effect functions, this function returns a new ParticleEmitter 
+object that copies the state of the ParticleEmitter loaded under 
+effect_name using either load_effect or load_effect_from_data.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_particles.emitter.EmitterSystem.flatten_effect_to_dict">
+<code class="descname">flatten_effect_to_dict</code><span class="sig-paren">(</span><em>self</em>, <em>ParticleEmitter emitter</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_particles.emitter.EmitterSystem.flatten_effect_to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Args:</p>
+<blockquote>
+<div>emitter (ParticleEmitter): The emitter to write out.</div></blockquote>
+<p>Takes a ParticleEmitter object and returns a dictionary containing 
+property, value pairs. Used internally as part of saving an effect.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_particles.emitter.EmitterSystem.init_component">
+<code class="descname">init_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em>, <em>unsigned int entity_id</em>, <em>str zone</em>, <em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_particles.emitter.EmitterSystem.init_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Args:</p>
+<blockquote>
+<div>args (list): List of effect names to load, effect_name must be 
+in <strong>loaded_effects</strong>.</div></blockquote>
+<p>The initialization arguments for an Emitter component is a list of 
+the names of previously loaded effects to attach to your entity.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_particles.emitter.EmitterSystem.load_effect">
+<code class="descname">load_effect</code><span class="sig-paren">(</span><em>self</em>, <em>str file_name</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_particles.emitter.EmitterSystem.load_effect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Args:</p>
+<blockquote>
+<div>file_name (str): Name of the file to load.</div></blockquote>
+<dl class="docutils">
+<dt>Return:</dt>
+<dd>str: The name of the effect as it was loaded into memory.</dd>
+</dl>
+<p>Loads a previously saved effect, uses cPickle. The name of the effect 
+will be returned.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_particles.emitter.EmitterSystem.load_effect_from_data">
+<code class="descname">load_effect_from_data</code><span class="sig-paren">(</span><em>self</em>, <em>dict data</em>, <em>str effect_name</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_particles.emitter.EmitterSystem.load_effect_from_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Args:</p>
+<blockquote>
+<div><p>data (dict): Dict containing ParticleEmitter property name, value 
+pairs. Can contain all or a subset of the ParticleEmitter
+properties.</p>
+<p>effect_name (str): Name of the new effect.</p>
+</div></blockquote>
+<p>Loads an effect into memory from a dictionary.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_particles.emitter.EmitterSystem.pickle_effect">
+<code class="descname">pickle_effect</code><span class="sig-paren">(</span><em>self</em>, <em>ParticleEmitter emitter</em>, <em>str file_name</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_particles.emitter.EmitterSystem.pickle_effect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Args:</p>
+<blockquote>
+<div><p>emitter (ParticleEmitter): The emitter to pickle.</p>
+<p>file_name (str): The name of the file to write.</p>
+</div></blockquote>
+<p>Uses cPickle to save an emitter to disk.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_particles.emitter.EmitterSystem.remove_component">
+<code class="descname">remove_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_particles.emitter.EmitterSystem.remove_component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_particles.emitter.EmitterSystem.remove_effect">
+<code class="descname">remove_effect</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int entity_id</em>, <em>int index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_particles.emitter.EmitterSystem.remove_effect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Args:</p>
+<blockquote>
+<div><p>entity_id (unsigned int): Id of the entity to remove the effect 
+from.</p>
+<p>index (int): Index of the emitter to be removed in the Entity’s
+EmitterComponent emitters list.</p>
+</div></blockquote>
+<p>Removes an effect from an existing entity without destroying the whole
+component.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_particles.emitter.EmitterSystem.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>self</em>, <em>float dt</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_particles.emitter.EmitterSystem.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_particles.emitter.EmitterComponent">
+<em class="property">class </em><code class="descclassname">kivent_particles.emitter.</code><code class="descname">EmitterComponent</code><a class="headerlink" href="#kivent_particles.emitter.EmitterComponent" title="Permalink to this definition">¶</a></dt>
+<dd><p>The component associated with EmitterSystem. Do not modify <strong>emitters</strong>
+yourself. Prefer to use EmitterSystem.add_effect and remove_effect.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>entity_id</strong> (unsigned int): The entity_id this component is currently
+associated with. Will be &lt;unsigned int&gt;-1 if the component is 
+unattached.</p>
+<p class="last"><strong>emitters</strong> (list): List of length MAX_EMITTERS (defaults to 8, you 
+can change this by recompiling kivent_particles after 
+modifying particle_config.pxi). Any active emitters will be in this
+list, open spots will be None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_particles.emitter.ParticleEmitter">
+<em class="property">class </em><code class="descclassname">kivent_particles.emitter.</code><code class="descname">ParticleEmitter</code><a class="headerlink" href="#kivent_particles.emitter.ParticleEmitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>The ParticleEmitter class controls the creation of particles for any 
+particular effect. You should not create one directly but instead allow
+EmitterSystem to create them for you. Up to a max of MAX_EMITTERS as 
+defined in particle_config.pxi can be attached to a single entity.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>effect_name</strong> (str): The name of this effect, as loaded by 
+EmitterSystem.load_effect or EmitterSystem.load_effect_from_data.</p>
+<p><strong>texture</strong> (str): The name of the texture being used for this particle 
+as registered in resource_managers.TextureManager.</p>
+<p><strong>pos_offset</strong> (tuple): The (x, y) offset this Emitter should be from 
+the parent Entity’s position component. This property returns a copy 
+of the data, not the data itself. Do not modify returned values 
+directly, instead set pos_offset again.</p>
+<p><strong>x_offset</strong> (float): The x component of pos_offset.</p>
+<p><strong>y_offset</strong> (float): The y component of pos_offset.</p>
+<p><strong>emit_angle_offset</strong> (float): The offset in degrees from the parent
+Entity’s rotate component.</p>
+<p><strong>emit_angle_variance</strong> (float): The amount of variance in the angle 
+offset of a particle.</p>
+<p><strong>life_span</strong> (float): The number of seconds a particle should exist 
+for.</p>
+<p><strong>life_span_variance</strong> (float): The amount of variance in life_span 
+for an individual particle.</p>
+<p><strong>paused</strong> (bool): If True this emitter will not create new particles.</p>
+<p><strong>emitter_type</strong> (int): The type of the emitter. Should be 0 for 
+gravity emitter, and 1 for radial emitter.</p>
+<p><strong>number_of_particles</strong> (int): The number of particles this effect 
+should create.</p>
+<p><strong>gravity</strong> (tuple): The amount of gravity that will effect particles 
+if emitter_type is 0 (Gravity Emitter). This property returns a copy 
+of the data, not the data itself. Do not modify returned values 
+directly, instead set gravity again.</p>
+<p><strong>gravity_x</strong> (float): The x component of gravity.</p>
+<p><strong>gravity_y</strong> (float): The y component of gravity.</p>
+<p><strong>start_scale</strong> (float): The scaling factor for the particles at the 
+beginning of their life. Actual size of particle will be scale * size
+of texture.</p>
+<p><strong>start_scale_variance</strong> (float): The amount of variance in start_scale 
+for an individual particle.</p>
+<p><strong>end_scale</strong> (float): The scaling factor for the particles at the 
+end of their life. Actual size of particle will be scale * size of 
+texture.</p>
+<p><strong>end_scale_variance</strong> (float): The amount of variance in end_scale 
+for an individual particle.</p>
+<p><strong>start_rotation</strong> (float): The starting rotation for a particle in 
+degrees.</p>
+<p><strong>start_rotation_variance</strong> (float): The variance in starting rotation
+for individual particles.</p>
+<p><strong>end_rotation</strong> (float): The ending rotation for a particle in 
+degrees.</p>
+<p><strong>end_rotation_variance</strong> (float): The variance in ending rotation 
+for individual particles.</p>
+<p><strong>pos_variance</strong> (tuple): The amount of variance from the location of 
+emitter per particle. This property returns a copy 
+of the data, not the data itself. Do not modify returned values 
+directly, instead set pos_variance again.</p>
+<p><strong>x_variance</strong> (float): The x component of pos_variance.</p>
+<p><strong>y_variance</strong> (float): The y component of pos_variance.</p>
+<p><strong>speed</strong> (float): The speed a particle will be emitted at if the 
+emitter_type is 0 (Gravity emitter).</p>
+<p><strong>speed_variance</strong> (float): The variance in speed for particles
+generated by emitter_type 0 (Gravity emitter).</p>
+<p><strong>radial_acceleration</strong> (float): The amount of radial acceleration 
+to be applied to particles generated by emitter_type 0 
+(Gravity emitters).</p>
+<p><strong>radial_acceleration_variance</strong> (float): The variation in 
+radial_acceleration.</p>
+<p><strong>tangential_acceleration</strong> (float): The amount of tangential
+acceleration to be applied to particles generated by emitter_type 0 
+(Gravity emitters).</p>
+<p><strong>tangential_acceleration_variance</strong> (float): The variation in 
+tangential_acceleration.</p>
+<p><strong>max_radius</strong> (float): The starting distance for particles being
+emitted by emitter_type 1 (radial emitters).</p>
+<p><strong>max_radius_variance</strong> (float): The variance in starting distance
+for radial emitters.</p>
+<p><strong>min_radius</strong> (float): The minimum radius before a particle is 
+cleaned up when emitted by emitter_type 1 (radial emitters).</p>
+<p><strong>rotate_per_second</strong> (float): The amount of rotation in degrees 
+that will happen per second for particles emitted by emitter_type 1
+(radial emitters).</p>
+<p><strong>rotate_per_second_variance</strong> (float): The variation in
+rotate_per_second.</p>
+<p><strong>start_color</strong> (list): The starting color for particles. This property 
+returns a copy of the data, not the data itself. Do not modify returned
+values directly, instead set start_color again.</p>
+<p><strong>start_color_variance</strong> (list): The amount of variance in each channel
+for the starting color of particles. This property 
+returns a copy of the data, not the data itself. Do not modify returned
+values directly, instead set start_color_variance again.</p>
+<p><strong>end_color</strong> (list): The ending color for particles. This property 
+returns a copy of the data, not the data itself. Do not modify returned
+values directly, instead set end_color again.</p>
+<p class="last"><strong>end_color_variance</strong> (list): The amount of variance in each channel
+for the ending color of particles. This property 
+returns a copy of the data, not the data itself. Do not modify returned
+values directly, instead set end_color_variance again.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="kivent_particles.emitter.ParticleEmitter.calculate_emission_rate">
+<code class="descname">calculate_emission_rate</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_particles.emitter.ParticleEmitter.calculate_emission_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is called automatically when either number_of_particles or 
+life_span is set. Emission rate is calculated by dividing the 
+number_of_particles by the life_span.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="id1">
+<h2>Particles<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_particles.particle.ParticleSystem">
+<em class="property">class </em><code class="descclassname">kivent_particles.particle.</code><code class="descname">ParticleSystem</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_particles.particle.ParticleSystem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processing Depends On: ParticleSystem, PositionSystem2D, RotateSystem2D,
+ScaleSystem2D, ColorSystem</p>
+<p>The ParticleSystem class handles creation, removal, and updating of 
+individual particles created by an EmitterSystem.</p>
+<p>Be sure to set ‘renderer_name’ to the system_id of the PartclesRenderer 
+you want to render each particle.</p>
+<p>You will typically not create an entity using ParticleSystem directly,
+instead an EmitterSystem will create the particle entities for you.</p>
+<p><strong>Attributes:</strong></p>
+<blockquote>
+<div><p><strong>renderer_name</strong> (StringProperty): The system_id of the
+PartclesRenderer the particles will use.</p>
+<p><strong>particle_zone</strong> (StringProperty): The zone in memory particles will
+be created in.</p>
+</div></blockquote>
+<dl class="method">
+<dt id="kivent_particles.particle.ParticleSystem.clear_component">
+<code class="descname">clear_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_particles.particle.ParticleSystem.clear_component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_particles.particle.ParticleSystem.init_component">
+<code class="descname">init_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em>, <em>unsigned int entity_id</em>, <em>str zone</em>, <em>ParticleEmitter emitter</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_particles.particle.ParticleSystem.init_component" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>emitter (ParticleEmitter): The emitter the particle is coming from.</dd>
+</dl>
+<p>The initialization arg for a ParticleComponent is just the
+ParticleEmitter that is creating the component. Typically you will not
+initialize a particle yourself, instead EmitterSystem will call
+ParticleSystem.create_particle (a cdef’d function).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_particles.particle.ParticleSystem.on_system_names">
+<code class="descname">on_system_names</code><span class="sig-paren">(</span><em>self</em>, <em>instance</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_particles.particle.ParticleSystem.on_system_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_particles.particle.ParticleSystem.remove_component">
+<code class="descname">remove_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_particles.particle.ParticleSystem.remove_component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="kivent_particles.particle.ParticleSystem.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>self</em>, <em>float dt</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_particles.particle.ParticleSystem.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_particles.particle.ParticleComponent">
+<em class="property">class </em><code class="descclassname">kivent_particles.particle.</code><code class="descname">ParticleComponent</code><a class="headerlink" href="#kivent_particles.particle.ParticleComponent" title="Permalink to this definition">¶</a></dt>
+<dd><p>The component associated with ParticleSystem</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>entity_id</strong> (unsigned int): The entity_id this component is currently
+associated with. Will be &lt;unsigned int&gt;-1 if the component is 
+unattached.</p>
+<p><strong>current_time</strong> (float): The current time of this particle.</p>
+<p><strong>total_time</strong> (float): The total time for this particle, when 
+current_time exceeds total_time the particle entity will be removed.</p>
+<p><strong>start_pos</strong> (tuple): The starting position of this particle. This 
+property returns a copy of the data, not the data itself. Do not modify
+returned values directly, instead set start_pos again.</p>
+<p><strong>start_x</strong> (float): The x component of start_pos.</p>
+<p><strong>start_y</strong> (float): The y component of start_pos.</p>
+<p><strong>velocity</strong> (tuple): The velocity of this particle. This 
+property returns a copy of the data, not the data itself. Do not modify
+returned values directly, instead set velocity again.</p>
+<p><strong>velocity_x</strong> (float): The x component of velocity.</p>
+<p><strong>velocity_y</strong> (float): The y component of velocity.</p>
+<p><strong>radial_acceleration</strong> (float): The radial acceleration for this 
+particle.</p>
+<p><strong>tangential_acceleration</strong> (float): The tangential acceleration 
+for this particle.</p>
+<p><strong>emit_radius</strong> (float): The current location on the radius of this 
+particle, used for emitter_type 1 emitters (Radial behavior).</p>
+<p><strong>emit_radius_delta</strong> (float): The rate of change for the emit_radius
+property.</p>
+<p><strong>rotation_delta</strong> (float): The rate of change for the rotation of 
+this particle.</p>
+<p><strong>scale_delta</strong> (float): The rate of change for the scale of this 
+particle.</p>
+<p><strong>emitter</strong> (ParticleEmitter): The emitter that this particle was 
+created by.</p>
+<p class="last"><strong>color_delta</strong> (list): The rate of change for the color of this 
+particle. Do not modify returned values directly, instead set velocity
+again.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="renderers">
+<h2>Renderers<a class="headerlink" href="#renderers" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_particles.particle_renderers.ParticleRenderer">
+<em class="property">class </em><code class="descclassname">kivent_particles.particle_renderers.</code><code class="descname">ParticleRenderer</code><a class="headerlink" href="#kivent_particles.particle_renderers.ParticleRenderer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processing Depends On: ParticlesRenderer, PositionSystem2D, ScaleSystem2D,
+RotateSystem2D, ColorSystem</p>
+<p>The renderer draws with the VertexFormat9F4UB:</p>
+<div class="highlight-cython"><div class="highlight"><pre><span></span><span class="k">ctypedef</span> <span class="k">struct</span> <span class="nc">VertexFormat9F4UB</span><span class="p">:</span>
+    <span class="n">GLfloat</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span> <span class="n">pos</span>
+    <span class="n">GLfloat</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span> <span class="n">uvs</span>
+    <span class="n">GLfloat</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span> <span class="n">center</span>
+    <span class="n">GLfloat</span><span class="p">[</span><span class="mf">2</span><span class="p">]</span> <span class="n">scale</span>
+    <span class="n">GLubyte</span><span class="p">[</span><span class="mf">4</span><span class="p">]</span> <span class="n">v_color</span>
+    <span class="n">GLfloat</span> <span class="n">rotate</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="kivent_particles.particle_renderers.ParticleRenderer.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>self</em>, <em>force_update</em>, <em>dt</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_particles.particle_renderers.ParticleRenderer.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="rendering.html" class="btn btn-neutral float-right" title="Rendering" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="physics.html" class="btn btn-neutral" title="The Cymunk Module" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2017, Jacob Kovac.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,612 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>The Maps Module &mdash; KivEnt 2.2.0 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="KivEnt 2.2.0 documentation" href="index.html"/>
+        <link rel="prev" title="Memory Handlers" href="memory_handlers.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> KivEnt
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="gameworld.html">GameWorld</a></li>
+<li class="toctree-l1"><a class="reference internal" href="entity.html">Entity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gamesystems.html">Game Systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="managers.html">Managers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="physics.html">The Cymunk Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="particles.html">Particles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rendering.html">Rendering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_handlers.html">Memory Handlers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">The Maps Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#tiled-managers">Tiled Managers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#systems">Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-kivent_maps.map_utils">Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-kivent_maps.map_data">Map Data</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">KivEnt</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>The Maps Module</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/tiled.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="the-maps-module">
+<h1>The Maps Module<a class="headerlink" href="#the-maps-module" title="Permalink to this headline">¶</a></h1>
+<p><strong>These classes have cdefed functions that cannot be read by
+Sphinx. Read the source if you want to find out more about using them.</strong></p>
+<p>This module extends the base functionality of KivEnt by integrating it with
+the Tiled map editor. See example 14_tmx_loader for a practical demonstration
+of using these systems.</p>
+<div class="section" id="tiled-managers">
+<h2>Tiled Managers<a class="headerlink" href="#tiled-managers" title="Permalink to this headline">¶</a></h2>
+<p>If you are using the kivent_maps module, an additional manager will be
+available to aid in the use of Tiled’s map format.</p>
+<dl class="class">
+<dt id="kivent_maps.map_manager.MapManager">
+<em class="property">class </em><code class="descclassname">kivent_maps.map_manager.</code><code class="descname">MapManager</code><a class="headerlink" href="#kivent_maps.map_manager.MapManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manages memory allocation and assigment of map data like the TileStructs
+and ObjStructs.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><strong>maps</strong> (dict): A dictionary matching names of the map to TileMaps</dd>
+<dt><strong>Attributes (Cython Access Only):</strong></dt>
+<dd><p class="first"><strong>maps_block</strong> (MemoryBlock): The memory block which stores the structs
+for a TileMap.</p>
+<p><strong>animation_manager</strong> (AnimationManager): instance of the gameworld’s
+animation_manager to be used by TileMaps for obtaining animation info.</p>
+<p><strong>model_manager</strong> (ModelManager): instance of the gameworld’s
+model_manager for obtaining rendering info.</p>
+<p class="last"><strong>allocation_size</strong> (unsigned int): Size of maps_block</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="kivent_maps.map_manager.MapManager.load_map">
+<code class="descname">load_map</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kivent_maps.map_manager.MapManager.load_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a TileMap object from tiles and objects in the specified list of
+dicts format. If they aren’t specified it just allocates space in
+maps_block for the required tile layers amd objects.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">map_size_x (unsigned int): number of rows</p>
+<p>map_size_y (unsigned int): number of cols</p>
+<p>tiles (list): 3d list of dicts containg data of the tiles. See
+TileMap for the format. Will not be set in the TileMap if None.</p>
+<p>tile_layers (unsigned int): the number of layers.</p>
+<p>objects (list): 3d list of dicts containg data of the tiles. See
+TileMap for the format. Will not be set in the TileMap if None.</p>
+<p>object_count (unsigned int): number of objects which would be added</p>
+<p class="last">orientation (str): Orientation of the map tiles. Can be one of
+‘orthogonal’, ‘staggered’, ‘hexagonal’, ‘isometric’</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="systems">
+<h2>Systems<a class="headerlink" href="#systems" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_maps.map_system.MapSystem">
+<em class="property">class </em><code class="descclassname">kivent_maps.map_system.</code><code class="descname">MapSystem</code><a class="headerlink" href="#kivent_maps.map_system.MapSystem" title="Permalink to this definition">¶</a></dt>
+<dd><p>The MapSystem manages a dynamic set of renderers used to display the
+various labels of the provided tilemap. It will register a new MapManager
+with <strong>Gameworld.reigster_manager</strong> that will be used to manage the various
+data loaded from .tmx files. Each component represents a coordinate
+for a tile.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_maps.map_system.MapComponent">
+<em class="property">class </em><code class="descclassname">kivent_maps.map_system.</code><code class="descname">MapComponent</code><a class="headerlink" href="#kivent_maps.map_system.MapComponent" title="Permalink to this definition">¶</a></dt>
+<dd><p>The component associated with MapSystem.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>entity_id</strong> (unsigned int): The entity_id this component is currently
+associated with. Will be &lt;unsigned int&gt;-1 if the component is
+unattached.</p>
+<p class="last"><strong>pos</strong> (tuple): The coordinate position for this tile on the map.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-kivent_maps.map_utils">
+<span id="utils"></span><h2>Utils<a class="headerlink" href="#module-kivent_maps.map_utils" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="kivent_maps.map_utils.init_entities_from_map">
+<code class="descclassname">kivent_maps.map_utils.</code><code class="descname">init_entities_from_map</code><span class="sig-paren">(</span><em>tile_map</em>, <em>init_entity</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kivent_maps/map_utils.html#init_entities_from_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kivent_maps.map_utils.init_entities_from_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialise entities for every layer of every tile and add them to the
+corresponding systems.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">tile_map (TileMap): the tile map from which to load the tiles.</p>
+<p class="last">init_entity (function): the gameworld.init_entity function</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="kivent_maps.map_utils.load_map_systems">
+<code class="descclassname">kivent_maps.map_utils.</code><code class="descname">load_map_systems</code><span class="sig-paren">(</span><em>layer_count</em>, <em>gameworld</em>, <em>renderargs</em>, <em>animargs</em>, <em>polyargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kivent_maps/map_utils.html#load_map_systems"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kivent_maps.map_utils.load_map_systems" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create and initialise the systems required for displaying all layers of the
+map. Each layer requires a Renderer for images, PolyRenderer for shapes
+and AnimationSystem for animated tiles.</p>
+<p>The name format of the Renderer is map_layer%d, PolyRenderer is
+map_layer%d_polygons, AnimationSystem is map_layer%d_animator
+where %d is the layer number.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">layer_count (unsigned int): Number of layers to init</p>
+<p>gameworld (Gameworld): Instance of the gameworld</p>
+<p>renderargs (dict): Dict of arguments required to init the Renderer.
+This is same as those used in a KV file for adding a system.</p>
+<p>animargs (dict): Dict of arguments required to init the AnimationSystem</p>
+<p class="last">polyargs (dict): Dict of arguments required to init the PolyRenderer.</p>
+</dd>
+<dt>Return:</dt>
+<dd>list of str, list of str: A tuple of two lists of system names with fisrt
+containing names of Renderers and PolyRenderers and second containing
+names of AnimationSystems. The names are in the order in which they are
+added to the Gameworld. You can use these lists for init_gameworld
+and setup_state.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="kivent_maps.map_utils.parse_tmx">
+<code class="descclassname">kivent_maps.map_utils.</code><code class="descname">parse_tmx</code><span class="sig-paren">(</span><em>filename</em>, <em>gameworld</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/kivent_maps/map_utils.html#parse_tmx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#kivent_maps.map_utils.parse_tmx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses the tmx library to load the TMX into an object and then calls all the
+util functions with the relevant data.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">filename (str): Name of the tmx file.</p>
+<p class="last">gameworld (Gameworld): instance of the gameworld.</p>
+</dd>
+<dt>Return:</dt>
+<dd>str: name of the loaded map which is the filename</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-kivent_maps.map_data">
+<span id="map-data"></span><h2>Map Data<a class="headerlink" href="#module-kivent_maps.map_data" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kivent_maps.map_data.HexagonalTileMap">
+<em class="property">class </em><code class="descclassname">kivent_maps.map_data.</code><code class="descname">HexagonalTileMap</code><a class="headerlink" href="#kivent_maps.map_data.HexagonalTileMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>HexagonalTileMap is for hexagonal tiles. Hexagonal tiles are like isometric
+tiles but with an extra flat length along width or height. They are also
+arranged in the staggered format.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><strong>hex_side_length</strong> (unsigned int): The side length of the hexagon in
+the tile. This turns out to be the same as considering an isometric
+tile lengthened along width/height. The extra length makes one side of
+the hexagon.</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_maps.map_data.IsometricTileMap">
+<em class="property">class </em><code class="descclassname">kivent_maps.map_data.</code><code class="descname">IsometricTileMap</code><a class="headerlink" href="#kivent_maps.map_data.IsometricTileMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>IsometricTileMap is used to display isometric tiles in the isometric
+projection layout. It is a subclass of TileMap with different
+get_tile_position and size_on_screen.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_maps.map_data.LayerObject">
+<em class="property">class </em><code class="descclassname">kivent_maps.map_data.</code><code class="descname">LayerObject</code><a class="headerlink" href="#kivent_maps.map_data.LayerObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>LayerObject is a non-tile object on the map. The types of LayerObject are
+polygons, ellipses and images. To render a LayerObject we require the
+render data (model and color/texture) and position.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>model</strong> (VertexModel): The vertex model to render for this object.
+If it is a polygon/ellipse this model will contain the vertices data
+for those shapes.</p>
+<p><strong>texture</strong> (str): Name of the texture used. This will be set only if
+the LayerObject is an image else will be None.</p>
+<p><strong>position</strong> (tuple): Position as (x,y) of the first vertex inside this
+Object’s VertexModel, x being distance from left-edge and y being
+distance from top-edge.</p>
+<p><strong>layer</strong> (unsigned int): Layer in which the object is.</p>
+<p class="last"><strong>color</strong> (tuple): Color of the Object if it is a shape. This color
+data is taken from the first vertex of its VertexModel.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_maps.map_data.LayerTile">
+<em class="property">class </em><code class="descclassname">kivent_maps.map_data.</code><code class="descname">LayerTile</code><a class="headerlink" href="#kivent_maps.map_data.LayerTile" title="Permalink to this definition">¶</a></dt>
+<dd><p>A LayerTile represents data for one layer of a Tile. It stores informtion
+required to render this layer of the tile.</p>
+<dl class="docutils">
+<dt><strong>Attributes</strong>:</dt>
+<dd><p class="first"><strong>model</strong> (str): Name of the model used by this LayerTile</p>
+<p><strong>texture</strong> (str): Name of the texture used by this LayerTile</p>
+<p><strong>animation</strong> (str): Name of the animation used by this LayerTile or
+None if this LayerTile is not animated.</p>
+<p class="last"><strong>layer</strong> (unsigned int): layer index of this LayerTile.</p>
+</dd>
+<dt><strong>Attributes: (Cython Access Only)</strong></dt>
+<dd><p class="first"><strong>tile_pointer</strong> (TileStruct*): Pointer to a TileStruct which stores
+data required by the attributes.</p>
+<p><strong>model_manager</strong> (ModelManager): Instance of the gameworld’s
+ModelManager to get vertex model pointer from model name.</p>
+<p class="last"><strong>animation_manager</strong> (AnimationManager): Instance of the gameworld’s
+AnimationManager to get animation data pointer from animation name.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_maps.map_data.StaggeredTileMap">
+<em class="property">class </em><code class="descclassname">kivent_maps.map_data.</code><code class="descname">StaggeredTileMap</code><a class="headerlink" href="#kivent_maps.map_data.StaggeredTileMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>StaggeredTileMap is a subclass of TileMap which is used for isometric
+staggered tile maps. It overrides the get_tile_position function
+and size_on_screen property because they are calculated differently
+for staggered tiles.</p>
+<p>Staggered tiles are arranged like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="o">---------</span>
+ <span class="o">---------</span>
+<span class="o">---------</span>
+ <span class="o">---------</span>
+
+<span class="ow">or</span> 
+
+<span class="o">|</span> <span class="o">|</span> <span class="o">|</span> <span class="o">|</span>
+<span class="o">|||||||</span>
+<span class="o">|||||||</span>
+<span class="o">|||||||</span>
+<span class="o">|||||||</span>
+ <span class="o">|</span> <span class="o">|</span> <span class="o">|</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>stagger_index</strong> (str): indicates whether to shift even or odd
+tiles while staggering. Can take value ‘even’ or ‘odd.</p>
+<p class="last"><strong>stagger_axis</strong> (boolean): Whether to stagger along x or y axis.
+Can take values ‘x’ and ‘y’.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_maps.map_data.Tile">
+<em class="property">class </em><code class="descclassname">kivent_maps.map_data.</code><code class="descname">Tile</code><a class="headerlink" href="#kivent_maps.map_data.Tile" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Tile is a collection of LayerTiles for one grid position on the map.
+The LayerTiles hold data for idividual layers and collectively form one
+Tile. Multiple Tiles arranged on the grid form the TileMap.</p>
+<dl class="docutils">
+<dt><strong>Attributes: (Cython Access Only)</strong></dt>
+<dd><p class="first"><strong>model_manager</strong> (ModelManager): Gameworld’s ModelManager instance to
+pass to LayerTiles while initialising them.</p>
+<p><strong>animation_manager</strong> (AnimationManager): Gameworld’s AnimationManager
+instance to pass to LayerTiles while initialising them.</p>
+<p><strong>layer_count</strong> (unsigned int): The maximum number of layers this Tile
+can hold i.e. the size of the TileStruct array.</p>
+<p class="last"><strong>_layers</strong> (TileStruct*): Pointer to TileStruct array which holds data
+for each layer of this tile. Size of this array is given by layer_count.</p>
+</dd>
+<dt><strong>Attributes:</strong></dt>
+<dd><strong>layers</strong> (list): List of LayerTiles contained in this tile. The list
+only contains a LayerTile for the non-empty layers so the list size may
+be less than layer_count.</dd>
+</dl>
+<dl class="method">
+<dt id="kivent_maps.map_data.Tile.get_layer_tile">
+<code class="descname">get_layer_tile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kivent_maps.map_data.Tile.get_layer_tile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a LayerTile object for the given layer.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>layer (unsigned int): The layer for which to return the LayerTile.</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="kivent_maps.map_data.TileMap">
+<em class="property">class </em><code class="descclassname">kivent_maps.map_data.</code><code class="descname">TileMap</code><a class="headerlink" href="#kivent_maps.map_data.TileMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>A TileMap holds all tile data for each location of the map grid for each
+layer, and a list of arbitrarily positioned LayerObjects.
+The tiles in this TileMap will be orthogonal.</p>
+<p>Render data for tiles is stored as a contiguous array of TileStructs.
+If the map size is M rows, N columns and L layers then the array dimensions
+are [M][N][L]. Each location (i,j) has a 1D array of size [L] which can be
+interfaced using Tile object. Each TileStruct inside that 1D array is
+interfaced using LayerTile.</p>
+<dl class="docutils">
+<dt><strong>Attributes:</strong></dt>
+<dd><p class="first"><strong>tiles</strong> (list): 2D list of Tile objects representing every grid
+grid location on the map. The outer list is a list of columns, and
+every column is a list of layer dicts as shown below.</p>
+<p>To set the tile data provide it a 2D list of dicts in the below format,
+where ‘i’ is the column and ‘j’ is the row.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">tiles</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span>                     <span class="p">[{</span>
+            <span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s1">&#39;model-name&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;texture&#39;</span><span class="p">:</span> <span class="s1">&#39;texture-name&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;layer&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;animation&#39;</span><span class="p">:</span> <span class="s1">&#39;animation-name&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;layer&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="p">}]</span>
+</pre></div>
+</div>
+<p>The ‘layer’ is zero indexed and layers for which there is no dict in
+this list are left empty.</p>
+<p><strong>objects</strong> (list): 2D list of LayerObjects on the map, separated
+by layer. To set data for these pass a 2D list of dicts of the format</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">objects</span><span class="p">[</span><span class="n">layer</span><span class="p">]</span> <span class="o">=</span>                     <span class="p">[{</span>
+            <span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s1">&#39;model-name&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;texture&#39;</span><span class="p">:</span> <span class="n">texture</span><span class="o">-</span><span class="n">name</span><span class="s1">&#39;,</span>
+            <span class="s1">&#39;position&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="p">}]</span>
+</pre></div>
+</div>
+<p><strong>z_index_map</strong> (list): List of ints which maps layer index of tiles
+and objects to z index i.e. render order for that layer. While
+initialising entities from this TileMap use this z_index_map to
+get which system to add the entity to given the layer index.
+Values till tile_layer_count correspond to tile layers and after that
+to object layers.</p>
+<p><strong>size</strong> (tuple): Size of the grid i.e. (rows, cols)</p>
+<p><strong>size_on_screen</strong> (tuple): Size in pixels when displayed on the screen</p>
+<p><strong>tile_size</strong> (tuple): Size in pixels of one tile image</p>
+<p class="last"><strong>name</strong> (str): Name of this TileMap</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="kivent_maps.map_data.TileMap.get_object">
+<code class="descname">get_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kivent_maps.map_data.TileMap.get_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get nth LayerObject in the map from ObjStruct. Because there is no
+fixed number of objects for each object layer, the objects are one
+big array and they are referenced by that index. The layer value
+is stored in the ObjStruct.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">n (unssigned int): index of the object in the list</p>
+<p class="last">empty (boolean): Will set NULL to the pointers in the ObjStructs
+if True. Default False.</p>
+</dd>
+<dt>Return:</dt>
+<dd>LayerObject: containing data of the ObjStruct</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_maps.map_data.TileMap.get_tile">
+<code class="descname">get_tile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kivent_maps.map_data.TileMap.get_tile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a Tile at (i,j) grid position of the tile map from TileStruct array</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">i (unsigned int): col of the tile</p>
+<p>j (unsigned int): row of the tile</p>
+<p class="last">empty (boolean): Will set NULL to the pointers in all the
+TileStructs if True. Default False.</p>
+</dd>
+<dt>Return:</dt>
+<dd>Tile: contains data of TileStruct array</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_maps.map_data.TileMap.get_tile_index">
+<code class="descname">get_tile_index</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kivent_maps.map_data.TileMap.get_tile_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the grid position(index) of the tile at a given pixel 
+position</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">pixel_x: horizontal pixel position of tile from left edge</p>
+<p class="last">pixel_y: vertical pixel position of tile from its bottom edge</p>
+</dd>
+<dt>Return:</dt>
+<dd>(unsigned i, unsigned j): col and row of the tile.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_maps.map_data.TileMap.get_tile_position">
+<code class="descname">get_tile_position</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kivent_maps.map_data.TileMap.get_tile_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the pixel position of the center of the tile
+at (i, j) grid position.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">i (unsigned int): col of the tile</p>
+<p class="last">j (unsigned int): row of the tile</p>
+</dd>
+<dt>Return:</dt>
+<dd>(unsigned int, unsigned int): Pixel position of center as x,y
+where x is distance from left edge and y is from top edge.</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="memory_handlers.html" class="btn btn-neutral" title="Memory Handlers" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014-2017, Jacob Kovac.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
