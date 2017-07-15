@@ -1115,10 +1115,21 @@ unattached.</p>
 <p><strong>parent</strong> (unsigned int): The id of the parent or -1
 if this element doesn’t have a parent.</p>
 <p><strong>children</strong> (list): A list of all entity_ids of the child entities.</p>
-<p><strong>is_root</strong> (bool): True if this component has a parent.</p>
+<p><strong>is_root</strong> (bool): True if this component has no parent.</p>
 <p class="last"><strong>descendants</strong> (list): A list of all descendants entity_ids.</p>
 </dd>
 </dl>
+<dl class="method">
+<dt id="kivent_attachment.attachment_system.RelationComponent.has_ancestor">
+<code class="descname">has_ancestor</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int ancestor</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_attachment.attachment_system.RelationComponent.has_ancestor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests if the given entity_id is an ancestor of this entity.
+Usefull to prevent cycles when attaching entities.</p>
+<dl class="docutils">
+<dt><strong>Args:</strong></dt>
+<dd><strong>ancestor</strong> (unsigned int): The entity_id to test for.</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -1131,7 +1142,7 @@ which need to attach entities to others in one way or another.
 Currently its main use is create local coordinate systems.</p>
 <p>When removing a parent component all childs are detached
 and changed to root nodes.
-If you want to remove a parent and its childs use the remove_subtree method.</p>
+If you want to remove a parent and its childs use the <strong>remove_subtree method</strong>.</p>
 <dl class="docutils">
 <dt><strong>Attributes: (Cython Access Only):</strong></dt>
 <dd><p class="first"><strong>root_nodes</strong> (unordered_set[RelationStruct*]): All sockets which
@@ -1187,6 +1198,19 @@ The child will become a a root entity.</p>
 <dl class="docutils">
 <dt><strong>Args:</strong></dt>
 <dd><strong>child_id</strong> (unsigned int)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kivent_attachment.attachment_system.RelationTreeSystem.has_ancestor_by_id">
+<code class="descname">has_ancestor_by_id</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int entity_id</em>, <em>unsigned int ancestor</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#kivent_attachment.attachment_system.RelationTreeSystem.has_ancestor_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests if the entity has the given ancestor..
+Usefull to prevent cycles when attaching entities.</p>
+<dl class="docutils">
+<dt><strong>Args:</strong></dt>
+<dd><p class="first"><strong>entity_id</strong> (unsigned int): The entities id.</p>
+<p class="last"><strong>ancestor</strong> (unsigned int): The ancestors id.</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -1247,7 +1271,7 @@ In most cases this will be the same value as used for the global system.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">This system can be used to implement other local systems in cython.     Extend it, select the required components in the <strong>system_names</strong>, <strong>local_systems</strong>     and <strong>parent_systems</strong> properties and overewite the <strong>update</strong> method.     For more information see <strong>LocalPositionRotateSystem2D</strong> source code.</p>
+<p class="last">This system can be used to implement other local systems in cython.     Extend it, select the required components in the <strong>system_names</strong>, <strong>local_systems</strong>     and <strong>parent_systems</strong> properties and overwrite the <strong>update</strong> method.     For more information see <strong>LocalPositionRotateSystem2D</strong> source code.</p>
 </div>
 <dl class="method">
 <dt id="kivent_attachment.attachment_system.LocalPositionSystem2D.attach_child">
@@ -1296,12 +1320,25 @@ The child will become a a root entity.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="kivent_attachment.attachment_system.LocalPositionSystem2D.has_ancestor_by_id">
+<code class="descname">has_ancestor_by_id</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int entity_id</em>, <em>unsigned int ancestor</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#kivent_attachment.attachment_system.LocalPositionSystem2D.has_ancestor_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests if the entity has the given ancestor..
+Usefull to prevent cycles when attaching entities.</p>
+<dl class="docutils">
+<dt><strong>Args:</strong></dt>
+<dd><p class="first"><strong>entity_id</strong> (unsigned int): The entities id.</p>
+<p class="last"><strong>ancestor</strong> (unsigned int): The ancestors id.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="kivent_attachment.attachment_system.LocalPositionSystem2D.init_component">
 <code class="descname">init_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em>, <em>unsigned int entity_id</em>, <em>str zone</em>, <em>dict args</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_attachment.attachment_system.LocalPositionSystem2D.init_component" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <strong>RelationComponent</strong> is initialized with an args dict containing
 a ‘parent’ key holding the parents entity_id.</p>
 <p>If there is no ‘parent’ key or the value is -1 the entity will become
-a root entity.</p>
+a root entity and its local coordinates are ignored.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1404,12 +1441,25 @@ The child will become a a root entity.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="kivent_attachment.attachment_system.LocalPositionRotateSystem2D.has_ancestor_by_id">
+<code class="descname">has_ancestor_by_id</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int entity_id</em>, <em>unsigned int ancestor</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#kivent_attachment.attachment_system.LocalPositionRotateSystem2D.has_ancestor_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests if the entity has the given ancestor..
+Usefull to prevent cycles when attaching entities.</p>
+<dl class="docutils">
+<dt><strong>Args:</strong></dt>
+<dd><p class="first"><strong>entity_id</strong> (unsigned int): The entities id.</p>
+<p class="last"><strong>ancestor</strong> (unsigned int): The ancestors id.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="kivent_attachment.attachment_system.LocalPositionRotateSystem2D.init_component">
 <code class="descname">init_component</code><span class="sig-paren">(</span><em>self</em>, <em>unsigned int component_index</em>, <em>unsigned int entity_id</em>, <em>str zone</em>, <em>dict args</em><span class="sig-paren">)</span><a class="headerlink" href="#kivent_attachment.attachment_system.LocalPositionRotateSystem2D.init_component" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <strong>RelationComponent</strong> is initialized with an args dict containing
 a ‘parent’ key holding the parents entity_id.</p>
 <p>If there is no ‘parent’ key or the value is -1 the entity will become
-a root entity.</p>
+a root entity and its local coordinates are ignored.</p>
 </dd></dl>
 
 <dl class="method">

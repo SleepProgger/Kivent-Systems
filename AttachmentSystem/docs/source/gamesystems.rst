@@ -123,15 +123,15 @@ required.
 
 .. autoclass:: kivent_attachment.attachment_system.RelationTreeSystem
     :show-inheritance:
-    :members: attach_child, detach_child, remove_component, create_component, init_component, remove_subtree
+    :members: attach_child, detach_child, remove_component, create_component, init_component, remove_subtree, has_ancestor_by_id
 
 .. autoclass:: kivent_attachment.attachment_system.LocalPositionSystem2D
     :show-inheritance:
-    :members: attach_child, detach_child, remove_component, create_component, init_component, remove_subtree
+    :members: attach_child, detach_child, remove_component, create_component, init_component, remove_subtree, has_ancestor_by_id
 
 .. autoclass:: kivent_attachment.attachment_system.LocalPositionRotateSystem2D
     :show-inheritance:
-    :members: attach_child, detach_child, remove_component, create_component, init_component, remove_subtree
+    :members: attach_child, detach_child, remove_component, create_component, init_component, remove_subtree, has_ancestor_by_id
 
 Controlling the Viewing Area
 ============================
