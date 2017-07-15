@@ -36,7 +36,8 @@ cdef class RelationTreeSystem(StaticMemGameSystem):
     cdef void* get_descendants(self, RelationStruct *parent, 
                                vector[RelationStruct*] *output) except NULL
     cdef void* get_topdown_iterator(self, vector[RelationStruct*] *output) except NULL
-
+    cdef bint has_ancestor(self, RelationStruct* entity, unsigned int ancestor)
+    cpdef bint has_ancestor_by_id(self, unsigned int entity_id, unsigned int ancestor)
 
 cdef class LocalPositionSystem2D(RelationTreeSystem):
     cdef bint _allocated

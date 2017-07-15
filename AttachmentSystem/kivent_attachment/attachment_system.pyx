@@ -17,6 +17,7 @@ from kivent_core.systems.position_systems cimport PositionComponent2D, PositionS
 from kivent_core.systems.rotate_systems cimport RotateComponent2D, RotateSystem2D
 from kivent_core.systems.gamesystem cimport GameSystem 
 from libc.math cimport sin, cos
+from networkx.algorithms.dag import ancestors
 
 
 cdef class RelationComponent(MemComponent):
@@ -70,6 +71,23 @@ cdef class RelationComponent(MemComponent):
             self.get_descendants(&tree)
             cdef RelationStruct *x
             return [ x.entity_id for x in tree ]
+    
+    def has_ancestor(self, unsigned int ancestor):
+        '''
+        Tests if the given entity_id is an ancestor of this entity.
+        Usefull to prevent cycles when attaching entities.
+        
+        **Args:**
+            **ancestor** (unsigned int): The entity_id to test for.
+        '''
+        cdef RelationStruct* entity = <RelationStruct*>self.pointer
+        if entity.entity_id == ancestor:
+            return True
+        while entity.parent:
+            if entity.parent.entity_id == ancestor:
+                return True
+            entity = entity.parent
+        return False
     
     cdef void* get_descendants(self,
             vector[RelationStruct*] *output) except NULL:
@@ -264,6 +282,33 @@ cdef class RelationTreeSystem(StaticMemGameSystem):
         for parent in self.root_nodes:
             self.get_descendants(parent, output)
         return output
+        
+    cdef bint has_ancestor(self, RelationStruct* entity, unsigned int ancestor):
+        if entity.entity_id == ancestor:
+            return 1
+        while entity.parent:
+            if entity.parent.entity_id == ancestor:
+                return 1
+            entity = entity.parent
+        return 0
+    
+    cpdef bint has_ancestor_by_id(self, unsigned int entity_id, unsigned int ancestor):
+        """
+        Tests if the entity has the given ancestor..
+        Usefull to prevent cycles when attaching entities.
+        
+        **Args:**
+            **entity_id** (unsigned int): The entities id.
+            
+            **ancestor** (unsigned int): The ancestors id.
+        """
+        cdef MemoryZone my_memory = self.imz_components.memory_zone
+        cdef IndexedMemoryZone entities = self.gameworld.entities
+        cdef unsigned int system_index = self.system_index + 1
+        cdef unsigned int* entity = <unsigned int*>entities.get_pointer(entity_id)
+        cdef RelationStruct *ent_struct = <RelationStruct*>my_memory.get_pointer(
+            entity[system_index])
+        return self.has_ancestor(ent_struct, ancestor)
         
     def attach_child(self, unsigned int parent_id, unsigned int child_id):
         """
