@@ -36,7 +36,7 @@ cdef class RelationComponent(MemComponent):
 
         **children** (list): A list of all entity_ids of the child entities.
         
-        **is_root** (bool): True if this component has a parent.
+        **is_root** (bool): True if this component has no parent.
         
         **descendants** (list): A list of all descendants entity_ids.
     '''
@@ -103,7 +103,7 @@ cdef class RelationTreeSystem(StaticMemGameSystem):
     
     When removing a parent component all childs are detached
     and changed to root nodes.
-    If you want to remove a parent and its childs use the remove_subtree method.
+    If you want to remove a parent and its childs use the **remove_subtree method**.
     
     **Attributes: (Cython Access Only):**
         **root_nodes** (unordered_set[RelationStruct*]): All sockets which
@@ -327,6 +327,10 @@ cdef class RelationTreeSystem(StaticMemGameSystem):
 Factory.register('RelationTreeSystem', cls=RelationTreeSystem)
 
 
+class ChangeAfterAllocationException():
+    pass
+
+
 cdef class LocalPositionSystem2D(RelationTreeSystem):
     '''
     Processing Depends On: LocalPositionSystem2D, PositionSystem2D
@@ -385,18 +389,18 @@ cdef class LocalPositionSystem2D(RelationTreeSystem):
 
     def on_parent_systems(self, _, v):
         if self._allocated:
-            # TODO: use correct exceptions
-            raise ValueError("Can't change 'parent_systems' after system allocation.")
+            raise ChangeAfterAllocationException(
+                "Can't change 'parent_systems' after system allocation.")
         self.parent_systems = list(v)
     def on_local_systems(self, _, v):
         if self._allocated:
-            # TODO: use correct exceptions
-            raise ValueError("Can't change 'local_systems' after system allocation.")
+            raise ChangeAfterAllocationException(
+                "Can't change 'local_systems' after system allocation.")
         self.local_systems = list(v)
     def on_system_names(self, _, v):
         if self._allocated:
-            # TODO: use correct exceptions
-            raise ValueError("Can't change 'system_names' after system allocation.")
+            raise ChangeAfterAllocationException(
+                "Can't change 'system_names' after system allocation.")
         self.system_names = list(v)
     
     cdef unsigned int _init_component(self, unsigned entity_id,
